@@ -34,6 +34,7 @@ const RegisterPage = () => {
 
       if (res.ok) {
         toast.success(data.message || "Registrasi Berhasil! Silahkan login");
+        await new Promise((resolve) => setTimeout(resolve, 2000));
         signIn();
       } else {
         toast.error(data.error || "Registrasi gagal! Silahkan coba lagi");
