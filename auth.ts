@@ -4,6 +4,10 @@ import NextAuth, { NextAuthOptions } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 
 export const authOptions: NextAuthOptions = {
+  pages: {
+    signIn: "/login",
+    signOut: "/",
+  },
   session: { strategy: "jwt" },
   providers: [
     Credentials({
