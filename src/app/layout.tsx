@@ -3,6 +3,8 @@ import { Geist, Geist_Mono } from "next/font/google";
 import localFont from "next/font/local";
 import "./globals.css";
 import { Toaster } from "react-hot-toast";
+import { ThemeProvider } from "next-themes";
+import SessionProvider from "../components/utils/SessionProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -37,13 +39,18 @@ export default function RootLayout({
   return (
     <html
       lang="en"
+      suppressHydrationWarning
       className={`${geistSans.variable} ${geistMono.variable} ${nbFont.variable} ${plentyFont.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col font-nb">
-        <main className="grow">
-          <Toaster position="top-center" reverseOrder={false} />
-          {children}
-        </main>
+        <SessionProvider>
+          <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+            <main className="grow">
+              <Toaster position="top-center" reverseOrder={false} />
+              {children}
+            </main>
+          </ThemeProvider>
+        </SessionProvider>
       </body>
     </html>
   );

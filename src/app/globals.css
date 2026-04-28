@@ -3,9 +3,16 @@
 @import "swiper/css/pagination";
 @import "swiper/css/navigation";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 :root {
   --background: #ffffff;
-  --foreground: #ffffff;
+  --foreground: #171717;
+}
+
+.dark {
+  --background: #0a0a0a;
+  --foreground: #ededed;
 }
 
 @theme inline {
