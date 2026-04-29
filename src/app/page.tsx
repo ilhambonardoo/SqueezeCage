@@ -2,12 +2,12 @@ import HeroSectionLanding from "../components/LandingPage/HeroSectionLanding";
 import JenisKambing from "../components/LandingPage/JenisKambing";
 import KelompokSection from "../components/LandingPage/KelompokSection";
 import TentangLanding from "../components/LandingPage/TentangLanding";
-import Navbar from "../components/Layouts/Navbar";
+import NavbarLanding from "../components/Layouts/NavbarLanding";
 
 const page = () => {
   return (
     <>
-      <Navbar />
+      <NavbarLanding />
       <main>
         <HeroSectionLanding />
         <TentangLanding />
