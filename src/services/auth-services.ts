@@ -1,7 +1,7 @@
 "use server";
 
 import { prisma } from "@/src/lib/prisma";
-import { AuthModelRegister } from "../../interface/auth";
+import { AuthModelRegister } from "../interface/auth";
 import { hash } from "bcryptjs";
 
 export async function register(formData: AuthModelRegister) {
