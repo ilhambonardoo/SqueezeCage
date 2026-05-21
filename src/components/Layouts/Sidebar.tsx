@@ -118,11 +118,14 @@ const Sidebar = () => {
             const hasChildren = item.children && item.children.length > 0;
             const isSubOpen = openMenu.includes(item.title);
             const isActive =
+              (item.href !== undefined &&
+                item.href !== "/" &&
+                pathname.startsWith(item.href)) ||
               pathname === item.href ||
               item.children?.some(
                 (child) =>
                   pathname === child.href ||
-                  (child.href === "/kambing" && pathname === "/kambing/create"),
+                  (child.href !== "/" && pathname.startsWith(child.href)),
               );
 
             return (
@@ -215,8 +218,8 @@ const Sidebar = () => {
                         {item.children.map((child) => {
                           const isChildActive =
                             pathname === child.href ||
-                            (child.href === "/kambing" &&
-                              pathname === "/kambing/create");
+                            (child.href !== "/" &&
+                              pathname.startsWith("/kambing"));
 
                           const SubIcon = child.icon;
                           return (

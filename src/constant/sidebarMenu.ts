@@ -1,11 +1,12 @@
 import {
   List,
-  Scale,
   User2Icon,
   LayoutDashboard,
   Beef,
   UserCircle,
 } from "lucide-react";
+
+import { IoScaleSharp } from "react-icons/io5";
 
 export const menuItems = [
   {
@@ -17,11 +18,15 @@ export const menuItems = [
   {
     title: "Kambing",
     icon: Beef,
-    children: [
-      { title: "Daftar Kambing", href: "/kambing", icon: List },
-      { title: "Timbangan", href: "/kambing/timbangan", icon: Scale },
-    ],
+    children: [{ title: "Daftar Kambing", href: "/kambing", icon: List }],
   },
+
+  {
+    title: "Timbangan",
+    href: "/timbangan",
+    icon: IoScaleSharp,
+  },
+
   {
     title: "Profil",
     href: "/profile",
