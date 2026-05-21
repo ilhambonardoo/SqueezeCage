@@ -5,6 +5,7 @@ import {
   getKambingById,
   updateKambing,
 } from "@/src/services/kambing-services";
+import { serverError } from "@/src/utils/api-helper";
 import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
 
@@ -47,13 +48,8 @@ export async function PATCH(
       message: "Data kambing berhasil di update",
       status: 200,
     });
-  } catch {
-    return NextResponse.json(
-      {
-        message: "Terjadi kesalahan pada server",
-      },
-      { status: 500 },
-    );
+  } catch (error) {
+    return serverError(error);
   }
 }
 
@@ -74,15 +70,8 @@ export async function DELETE(
       status: 201,
       message: "Data kambing berhasil dihapus!",
     });
-  } catch {
-    return NextResponse.json(
-      {
-        message: "Terjadi kesalahan pada server!",
-      },
-      {
-        status: 500,
-      },
-    );
+  } catch (error) {
+    return serverError(error);
   }
 }
 
@@ -102,14 +91,7 @@ export async function GET(
     return NextResponse.json(res.data, {
       status: 200,
     });
-  } catch {
-    return NextResponse.json(
-      {
-        message: "Gagal mengambil data!",
-      },
-      {
-        status: 500,
-      },
-    );
+  } catch (error) {
+    return serverError(error);
   }
 }

@@ -17,5 +17,5 @@ export interface KambingModel {
   tgl_masuk: Date;
   imageUrl: string;
   imageKey: string;
-  userId: string;
+  userId?: string;
 }

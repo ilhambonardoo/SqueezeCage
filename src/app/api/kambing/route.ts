@@ -1,3 +1,4 @@
+import { serverError } from "@/src/utils/api-helper";
 import { KambingValidation } from "@/src/lib/validation/kambing-validation";
 import { createKambing, getAllKambing } from "@/src/services/kambing-services";
 import { getServerSession } from "next-auth";
@@ -42,13 +43,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ message: res.message }, { status: 201 });
   } catch (error) {
-    return NextResponse.json(
-      {
-        message: "Terjadi kesalahan pada server",
-        error: error instanceof Error ? error.message : String(error),
-      },
-      { status: 500 },
-    );
+    return serverError(error);
   }
 }
 
@@ -64,14 +59,7 @@ export async function GET() {
     return NextResponse.json(res.data, {
       status: 201,
     });
-  } catch {
-    return NextResponse.json(
-      {
-        message: "Gagal mengambil data!",
-      },
-      {
-        status: 500,
-      },
-    );
+  } catch (error) {
+    return serverError(error);
   }
 }
