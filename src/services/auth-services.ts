@@ -11,12 +11,20 @@ export async function register(formData: AuthModelRegister) {
     return { status: 400, message: "Semua field wajib diisi!" };
   }
 
-  const existingUser = await prisma.user.findUnique({
+  const existingEmail = await prisma.user.findUnique({
     where: { email },
   });
 
-  if (existingUser) {
+  if (existingEmail) {
     return { status: 409, message: "Email sudah terdaftar!" };
+  }
+
+  const existingUsername = await prisma.user.findUnique({
+    where: { username },
+  });
+
+  if (existingUsername) {
+    return { status: 409, message: "Username sudah terdaftar!" };
   }
 
   const hashedPassword = await hash(password, 12);

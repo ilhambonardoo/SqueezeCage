@@ -92,12 +92,6 @@ const LoginPage = () => {
                 >
                   Kata Sandi
                 </label>
-                <Link
-                  href="#"
-                  className="text-xs font-semibold text-amber-700 hover:underline"
-                >
-                  Lupa password?
-                </Link>
               </div>
               <input
                 id="password"
