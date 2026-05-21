@@ -9,6 +9,6 @@ export function useMounted() {
     }, 0);
 
     return () => clearTimeout(timeOut);
-  });
+  }, []);
   return mounted;
 }
