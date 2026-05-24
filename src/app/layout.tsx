@@ -5,6 +5,9 @@ import "./globals.css";
 import { Toaster } from "react-hot-toast";
 import { ThemeProvider } from "next-themes";
 import SessionProvider from "../components/utils/SessionProvider";
+import { NextSSRPlugin } from "@uploadthing/react/next-ssr-plugin";
+import { extractRouterConfig } from "uploadthing/server";
+import { ourFileRouter } from "./api/uploadthing/core";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -44,6 +47,7 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col font-nb">
         <SessionProvider>
+          <NextSSRPlugin routerConfig={extractRouterConfig(ourFileRouter)} />
           <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
             <main className="grow">
               <Toaster position="top-center" reverseOrder={false} />
