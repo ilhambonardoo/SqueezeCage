@@ -4,6 +4,7 @@ import {
   LayoutDashboard,
   Beef,
   UserCircle,
+  Plus,
 } from "lucide-react";
 
 import { IoScaleSharp } from "react-icons/io5";
@@ -18,7 +19,10 @@ export const menuItems = [
   {
     title: "Kambing",
     icon: Beef,
-    children: [{ title: "Daftar Kambing", href: "/kambing", icon: List }],
+    children: [
+      { title: "Daftar Kambing", href: "/kambing", icon: List },
+      { title: "Tambah Kambing", href: "/kambing/create", icon: Plus },
+    ],
   },
 
   {
