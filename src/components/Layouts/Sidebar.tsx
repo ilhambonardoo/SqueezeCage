@@ -218,8 +218,7 @@ const Sidebar = () => {
                         {item.children.map((child) => {
                           const isChildActive =
                             pathname === child.href ||
-                            (child.href !== "/" &&
-                              pathname.startsWith("/kambing"));
+                            (child.href === "/" && pathname === "/kambing");
 
                           const SubIcon = child.icon;
                           return (
