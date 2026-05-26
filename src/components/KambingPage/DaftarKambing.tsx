@@ -5,9 +5,28 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { Kambing } from "@/src/generated/prisma/client";
 import { useKambing } from "@/src/hooks/useKambing";
+import { useSearchPagination } from "@/src/hooks/useSearchPagination";
+import SearchInput from "../utils/SearchInput";
+import Pagination from "../utils/Pagination";
 
 const DaftarKambing = () => {
   const { dataKambing, isLoading, errors, deleteKambing } = useKambing();
+  const {
+    searchTerm,
+    onSearchChange,
+    currentItems,
+    currentPage,
+    totalPages,
+    startIndex,
+    setCurrentPage,
+    filteredData,
+  } = useSearchPagination(dataKambing, 10, [
+    "kode_kambing",
+    "nama",
+    "jenis_hewan",
+    "jenis_kelamin",
+  ]);
+
   const router = useRouter();
 
   const handleDelete = async (id: string) => {
@@ -68,6 +87,12 @@ const DaftarKambing = () => {
           </div>
         </div>
         <div className="flex flex-col sm:flex-row justify-end items-end sm:items-center gap-4 mb-6 sm:mb-10 mr-5">
+          <SearchInput
+            onChange={onSearchChange}
+            value={searchTerm}
+            placeholder="Cari kambing...."
+          />
+
           <button
             onClick={() => router.push("/kambing/create")}
             className="w-1/2 mt-10 mb-5 sm:w-auto flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2.5 rounded-xl transition-colors text-sm font-semibold cursor-pointer shadow-sm"
@@ -111,7 +136,7 @@ const DaftarKambing = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200 dark:divide-neutral-800">
-                {dataKambing.map((item: Kambing) => (
+                {currentItems.map((item: Kambing) => (
                   <tr
                     key={item.id}
                     className="hover:bg-gray-50 dark:hover:bg-neutral-800/50 transition-colors"
@@ -190,6 +215,14 @@ const DaftarKambing = () => {
             </table>
           </div>
         </div>
+        <Pagination
+          currentPage={currentPage}
+          endIndex={startIndex + 10}
+          startIndex={startIndex}
+          onPageChange={setCurrentPage}
+          totalData={filteredData.length}
+          totalPages={totalPages}
+        />
       </section>
     </>
   );
