@@ -2,6 +2,9 @@ import { prisma } from "@/src/lib/prisma";
 import { hash } from "bcryptjs";
 import { UserModel } from "../generated/prisma/models";
 import { Role } from "../generated/prisma/client";
+import { UTApi } from "uploadthing/server";
+
+const utapi = new UTApi();
 
 export async function createUser(formData: UserModel) {
   const { nama, email, password, role, username } = formData;
@@ -83,6 +86,18 @@ export async function updateUser(
 
   if (!nama || !username || !email) {
     return { status: 400, message: "Nama, Username, dan Email wajib diisi!" };
+  }
+
+  const existingUser = await prisma.user.findUnique({
+    where: { id },
+    select: { image: true },
+  });
+
+  if (existingUser?.image && existingUser.image !== image) {
+    const fileKey = existingUser.image.split("/").pop();
+    if (fileKey) {
+      await utapi.deleteFiles(fileKey);
+    }
   }
 
   const data: {
