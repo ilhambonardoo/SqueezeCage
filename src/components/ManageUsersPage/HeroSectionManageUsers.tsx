@@ -1,6 +1,4 @@
 "use client";
-import { Plus } from "lucide-react";
-import Link from "next/link";
 
 const HeroSectionManageUsers = () => {
   return (
@@ -16,15 +14,6 @@ const HeroSectionManageUsers = () => {
             atur akun pengguna di satu tempat.
           </p>
         </div>
-      </div>
-      <div className="flex flex-col sm:flex-row justify-end items-end sm:items-center gap-4 mb-6 sm:mb-10 mr-5">
-        <Link
-          href="/users/create"
-          className="w-1/2 mt-10 mb-5 sm:w-auto flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2.5 rounded-xl transition-colors text-sm font-semibold cursor-pointer shadow-sm"
-        >
-          <Plus size={18} />
-          Tambah User
-        </Link>
       </div>
     </section>
   );
