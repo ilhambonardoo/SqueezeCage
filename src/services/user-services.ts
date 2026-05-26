@@ -1,6 +1,7 @@
 import { prisma } from "@/src/lib/prisma";
 import { hash } from "bcryptjs";
 import { UserModel } from "../generated/prisma/models";
+import { Role } from "../generated/prisma/client";
 
 export async function createUser(formData: UserModel) {
   const { nama, email, password, role, username } = formData;
@@ -43,6 +44,7 @@ export async function getAllUsers() {
       email: true,
       username: true,
       role: true,
+      image: true,
       createdAt: true,
     },
   });
@@ -73,20 +75,34 @@ export async function getUserById(id: string) {
   return { status: 200, user };
 }
 
-export async function updateUser(id: string, formData: UserModel) {
-  const { nama, email, username, password, role } = formData;
+export async function updateUser(
+  id: string,
+  formData: Partial<UserModel> & { image?: string | null },
+) {
+  const { nama, email, username, password, role, image } = formData;
 
   if (!nama || !username || !email) {
     return { status: 400, message: "Nama, Username, dan Email wajib diisi!" };
   }
 
-  const data = {
+  const data: {
+    nama: string;
+    email: string;
+    username: string;
+    image?: string | null;
+    role?: Role;
+    password?: string;
+  } = {
     nama,
     email,
     username,
-    role,
-    password,
+    image,
   };
+
+  // Hanya update role jika dikirimkan (khusus manajemen user/admin)
+  if (role) {
+    data.role = role as Role;
+  }
 
   if (password && password.trim() !== "") {
     data.password = await hash(password, 12);
@@ -97,7 +113,9 @@ export async function updateUser(id: string, formData: UserModel) {
     data,
   });
 
-  if (!user) return { status: 404, message: "User tidak ditemukan!" };
+  if (!user) {
+    return { status: 404, message: "Data tidak ditemukan!" };
+  }
 
   return { status: 200, user };
 }

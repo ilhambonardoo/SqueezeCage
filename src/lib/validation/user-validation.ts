@@ -40,5 +40,6 @@ export class UserValidation {
       .optional()
       .or(z.literal("")),
     role: z.nativeEnum(Role).optional(),
+    image: z.string().optional().nullable(),
   });
 }

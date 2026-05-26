@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { motion, AnimatePresence, spring } from "framer-motion";
 import { Menu, X, ChevronRight, Edit, LogOut } from "lucide-react";
 import { cn } from "@/src/utils/cn";
@@ -17,6 +17,7 @@ const Sidebar = () => {
   const [openMenu, setOpenMenu] = useState<string[]>([]);
   const pathname = usePathname();
   const { data: session } = useSession();
+  const router = useRouter();
 
   useEffect(() => {
     const checkMobile = () => {
@@ -103,6 +104,9 @@ const Sidebar = () => {
               <motion.button
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
+                onClick={() => {
+                  router.push("/profile?edit=true");
+                }}
                 className="p-1.5 hover:bg-white cursor-pointer dark:hover:bg-neutral-700 rounded-lg text-neutral-400 hover:text-amber-700 dark:hover:text-amber-500 transition-colors shadow-sm"
               >
                 <Edit size={14} />
