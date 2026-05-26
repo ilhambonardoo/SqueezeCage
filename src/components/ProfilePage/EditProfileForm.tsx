@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { User, Mail, AtSign, Camera, Save, X } from "lucide-react";
+import { User, Mail, AtSign, Camera, Save, X, Trash2 } from "lucide-react";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import toast from "react-hot-toast";
@@ -44,6 +44,11 @@ const EditProfileForm = ({ onClose }: EditProfileFormProps) => {
     }
   };
 
+  const handleRemoveImage = () => {
+    setPreviewImage(null);
+    setSelectedFile(null);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -57,6 +62,8 @@ const EditProfileForm = ({ onClose }: EditProfileFormProps) => {
         if (uploadRes && uploadRes[0]) {
           imageUrl = uploadRes[0].ufsUrl;
         }
+      } else if (previewImage === null) {
+        imageUrl = null;
       }
 
       // 2. Update user profile
@@ -119,6 +126,15 @@ const EditProfileForm = ({ onClose }: EditProfileFormProps) => {
         <div className="flex flex-col items-center mb-8">
           <div className="relative group">
             <div className="w-24 h-24 rounded-full overflow-hidden border-4 border-amber-500/20 bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center">
+              {previewImage && (
+                <button
+                  type="button"
+                  onClick={handleRemoveImage}
+                  className="absolute cursor-pointer -top-1 -right-1 bg-red-500 text-white p-1 rounded-full hover:bg-red-600 transition-all z-10"
+                >
+                  <Trash2 size={14} />
+                </button>
+              )}
               {previewImage ? (
                 <Image
                   src={previewImage}
