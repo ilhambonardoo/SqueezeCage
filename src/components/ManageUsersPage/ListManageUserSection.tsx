@@ -4,6 +4,7 @@ import { useMounted } from "@/src/hooks/useMounted";
 import { UseUser } from "@/src/hooks/useUser";
 import { useRouter } from "next/navigation";
 import { UserModel } from "@/src/interface/auth";
+import Image from "next/image";
 
 const ManageUserSection = () => {
   const mounted = useMounted();
@@ -89,8 +90,18 @@ const ManageUserSection = () => {
               >
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center text-amber-600">
-                      <UserIcon size={20} />
+                    <div className="w-10 h-10 rounded-full overflow-hidden bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center text-amber-600 border border-amber-500/20">
+                      {user.image ? (
+                        <Image
+                          src={user.image}
+                          alt={user.nama}
+                          width={40}
+                          height={40}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <UserIcon size={20} />
+                      )}
                     </div>
                     <span className="font-semibold text-gray-900 dark:text-neutral-200">
                       {user.nama}
