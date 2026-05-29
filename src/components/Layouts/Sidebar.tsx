@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { motion, AnimatePresence, spring } from "framer-motion";
@@ -18,6 +18,7 @@ const Sidebar = () => {
   const pathname = usePathname();
   const { data: session } = useSession();
   const router = useRouter();
+  const mounted = useMounted();
 
   useEffect(() => {
     const checkMobile = () => {
@@ -32,9 +33,6 @@ const Sidebar = () => {
     return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
-  const mounted = useMounted();
-  if (!mounted) return null;
-
   const toggleSidebar = () => setIsOpen(!isOpen);
 
   const toggleSubMenu = (title: string) => {
@@ -42,6 +40,20 @@ const Sidebar = () => {
       prev.includes(title) ? prev.filter((t) => t !== title) : [...prev, title],
     );
   };
+
+  const userRole = session?.user.role;
+
+  const filterdMenuItems = useMemo(() => {
+    if (!userRole) return [];
+
+    return menuItems.filter((item) => {
+      if (!item.roles) {
+        return false;
+      }
+
+      return item.roles.includes(userRole);
+    });
+  }, [userRole]);
 
   const sidebarVariants = {
     open: {
@@ -58,6 +70,8 @@ const Sidebar = () => {
     hover: { scale: 1.02, x: 5 },
     tap: { scale: 0.98 },
   };
+
+  if (!mounted) return null;
 
   return (
     <>
@@ -118,7 +132,7 @@ const Sidebar = () => {
         <nav
           className={`flex-1 px-2 py-3 space-y-1 ${isOpen ? "mt-2" : "mt-20"}`}
         >
-          {menuItems.map((item) => {
+          {filterdMenuItems.map((item) => {
             const hasChildren = item.children && item.children.length > 0;
             const isSubOpen = openMenu.includes(item.title);
             const isActive =

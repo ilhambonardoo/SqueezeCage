@@ -14,6 +14,7 @@ export const menuItems = [
     title: "Dashboard",
     href: "/dashboard",
     icon: LayoutDashboard,
+    roles: ["ADMIN", "OPERATOR"],
   },
 
   {
@@ -23,22 +24,26 @@ export const menuItems = [
       { title: "Daftar Kambing", href: "/kambing", icon: List },
       { title: "Tambah Kambing", href: "/kambing/create", icon: Plus },
     ],
+    roles: ["ADMIN", "OPERATOR"],
   },
 
   {
     title: "Timbangan",
     href: "/timbangan",
     icon: IoScaleSharp,
+    roles: ["ADMIN", "OPERATOR"],
   },
 
   {
     title: "Profil",
     href: "/profile",
     icon: UserCircle,
+    roles: ["ADMIN", "OPERATOR"],
   },
   {
     title: "Manajemen Users",
     href: "/users",
     icon: User2Icon,
+    roles: ["ADMIN"],
   },
 ];
