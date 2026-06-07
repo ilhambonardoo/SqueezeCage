@@ -7,29 +7,59 @@ import { useState } from "react";
 import toast from "react-hot-toast";
 import { KambingForm } from "@/src/components/KambingPage/KambingForm";
 import { Kambing } from "@/src/generated/prisma/client";
+import { useUploadThing } from "@/src/hooks/useUploadthing";
 
 const CreatePageKambing = () => {
   const router = useRouter();
   const mounted = useMounted();
   const [loading, setLoading] = useState(false);
 
-  const handleCreateSubmit = async (payload: Kambing) => {
+  const { startUpload } = useUploadThing("imageUploader", {
+    onUploadError: (error: Error) => {
+      toast.error(`Gagal mengunggah foto kambing: ${error.message}`);
+    },
+  });
+
+  const handleCreateSubmit = async (
+    formData: Kambing,
+    selectedFile: File | null,
+    isImageRemoved: boolean,
+  ) => {
     setLoading(true);
     try {
+      let finalImageUrl = null;
+      let finalImagekey = null;
+
+      if (selectedFile && !isImageRemoved) {
+        const uploadRes = await startUpload([selectedFile]);
+        if (uploadRes && uploadRes[0]) {
+          finalImageUrl = uploadRes[0].ufsUrl;
+          finalImagekey = uploadRes[0].key;
+        } else {
+          setLoading(false);
+          return;
+        }
+      }
+
+      const finalPayload = {
+        ...formData,
+        imageUrl: finalImageUrl,
+        imageKey: finalImagekey,
+      };
+
       const res = await fetch("/api/kambing", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
+        body: JSON.stringify(finalPayload),
       });
 
       if (!res.ok) {
-        toast.error("Gagal menambahkan data kambing");
+        const errData = await res.json();
+        toast.error(errData.message || "Gagal menambahkan data kambing");
       } else {
-        localStorage.removeItem("temp_kambing_url_create");
-        localStorage.removeItem("temp_kambing_key_create");
-        localStorage.removeItem("temp_kambing_deleted_create");
         toast.success("Berhasil menambahkan data kambing");
         router.push("/kambing");
+        router.refresh();
       }
     } catch {
       toast.error("Terjadi kesalahan sistem");
@@ -57,7 +87,6 @@ const CreatePageKambing = () => {
         onSubmit={handleCreateSubmit}
         isSubmitting={loading}
         submitLabel="Tambah Ternak Baru"
-        localStorageKeySuffix="create"
       />
     </section>
   );

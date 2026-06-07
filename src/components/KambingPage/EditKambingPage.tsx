@@ -8,6 +8,7 @@ import toast from "react-hot-toast";
 import { KambingForm } from "@/src/components/KambingPage/KambingForm";
 import { KambingModel } from "@/src/interface/kambing";
 import { Kambing } from "@/src/generated/prisma/client";
+import { useUploadThing } from "@/src/hooks/useUploadthing";
 
 interface EditKambingPageProps {
   id: string;
@@ -19,6 +20,12 @@ const EditKambingPage = ({ id }: EditKambingPageProps) => {
   const [initialData, setInitialData] = useState<KambingModel | null>(null);
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
+
+  const { startUpload } = useUploadThing("imageUploader", {
+    onUploadError: (error: Error) => {
+      toast.error(`Gagal mengunggah foto kambing : ${error.message}`);
+    },
+  });
 
   useEffect(() => {
     const fetchData = async () => {
@@ -40,15 +47,51 @@ const EditKambingPage = ({ id }: EditKambingPageProps) => {
     }
   }, [id, router]);
 
-  const handleUpdate = async (payload: Kambing) => {
+  const handleUpdate = async (
+    formData: Kambing,
+    selecetedFile: File | null,
+    isImageRemoved: boolean,
+  ) => {
     setUpdating(true);
     try {
+      let finalImageUrl = initialData?.imageUrl || null;
+      let finalImageKey = initialData?.imageKey || null;
+      let oldImageKeyToDelete = null;
+
+      if (selecetedFile) {
+        if (initialData?.imageKey) {
+          oldImageKeyToDelete = initialData.imageKey;
+        }
+
+        const uploadRes = await startUpload([selecetedFile]);
+        if (uploadRes && uploadRes[0]) {
+          finalImageUrl = uploadRes[0].ufsUrl;
+          finalImageKey = uploadRes[0].key;
+        } else {
+          setUpdating(false);
+          return;
+        }
+      } else if (isImageRemoved) {
+        if (initialData?.imageKey) {
+          oldImageKeyToDelete = initialData.imageKey;
+        }
+        finalImageUrl = null;
+        finalImageKey = null;
+      }
+
+      const finalPayload = {
+        ...formData,
+        imageUrl: finalImageUrl,
+        imageKey: finalImageKey,
+        oldImageKeyToDelete,
+      };
+
       const res = await fetch(`/api/kambing/${id}`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(payload),
+        body: JSON.stringify(finalPayload),
       });
 
       const data = await res.json();
@@ -56,15 +99,12 @@ const EditKambingPage = ({ id }: EditKambingPageProps) => {
       if (!res.ok) {
         toast.error(data.message || "Gagal memperbarui data");
       } else {
-        localStorage.removeItem(`temp_kambing_url_${id}`);
-        localStorage.removeItem(`temp_kambing_key_${id}`);
-        localStorage.removeItem(`temp_kambing_deleted_${id}`);
-
         toast.success("Data kambing berhasil diperbarui");
         router.push(`/kambing`);
+        router.refresh();
       }
     } catch {
-      toast.error("Terjadi kesalahan sistem");
+      toast.error("Terjadi Kesalahan Sistem");
     } finally {
       setUpdating(false);
     }
@@ -95,7 +135,6 @@ const EditKambingPage = ({ id }: EditKambingPageProps) => {
         onSubmit={handleUpdate}
         isSubmitting={updating}
         submitLabel="Simpan Perubahan"
-        localStorageKeySuffix={id}
       />
     </section>
   );
