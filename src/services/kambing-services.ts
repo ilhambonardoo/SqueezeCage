@@ -46,8 +46,8 @@ const parseKambingData = (formData: KambingModel) => ({
   jenis_kelamin: formData.jenis_kelamin as "JANTAN" | "BETINA",
   statusHamil:
     formData.jenis_kelamin === "BETINA" ? formData.statusHamil : null,
-  imageUrl: formData.imageUrl || null,
-  imageKey: formData.imageKey || null,
+  imageUrl: formData.imageUrl === null ? null : formData.imageUrl || null,
+  imageKey: formData.imageKey === null ? null : formData.imageKey || null,
 });
 
 export async function createKambing(formData: KambingModel) {
@@ -82,7 +82,11 @@ export async function createKambing(formData: KambingModel) {
   };
 }
 
-export async function updateKambing(id: string, formData: KambingModel) {
+export async function updateKambing(
+  id: string,
+  formData: KambingModel,
+  oldImageKeyToDelete?: string | null,
+) {
   if (!id) {
     return { status: 400, message: "Kode Kambing diperlukan!" };
   }
@@ -95,12 +99,22 @@ export async function updateKambing(id: string, formData: KambingModel) {
     return { status: 404, message: "Kode kambing tidak ditemukan" };
   }
 
+  if (oldImageKeyToDelete) {
+    try {
+      await utapi.deleteFiles(oldImageKeyToDelete);
+    } catch (error) {
+      console.error("Gagal membersihkan file lama di database", error);
+    }
+  }
+
   const updateKambing = await prisma.kambing.update({
     where: { id },
     data: {
       ...parseKambingData(formData),
     },
   });
+
+  revalidatePath("/kambing");
 
   return {
     status: 200,
