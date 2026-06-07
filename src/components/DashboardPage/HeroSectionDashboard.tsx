@@ -1,8 +1,12 @@
 "use client";
+import { useKambing } from "@/src/hooks/useKambing";
 import { useMounted } from "@/src/hooks/useMounted";
 
 const HeroSectionDashboard = () => {
   const mounted = useMounted();
+
+  const { stats, isLoading } = useKambing();
+
   if (!mounted) return null;
   return (
     <section className="p-6  pt-20 lg:pt-12 lg:p-10 pb-8 transition-colors duration-300">
@@ -33,9 +37,18 @@ const HeroSectionDashboard = () => {
               <p className="text-sm uppercase tracking-[0.2em] text-neutral-500 dark:text-neutral-400 font-bold">
                 Total Kambing
               </p>
-              <p className="text-7xl font-plenty text-amber-700 dark:text-amber-500 tabular-nums">
-                123
-              </p>
+              {isLoading ? (
+                <div className="h-16 w-24 bg-neutral-200 dark:bg-neutral-800 animate-pulse rounded-2xl mt-2" />
+              ) : (
+                <>
+                  <p className="text-7xl font-plenty text-amber-700 dark:text-amber-500 tabular-nums">
+                    {stats?.total || 0}{" "}
+                    <span className="text-xl font-plenty text-neutral-400">
+                      Ekor
+                    </span>
+                  </p>
+                </>
+              )}
             </div>
           </div>
         </div>
