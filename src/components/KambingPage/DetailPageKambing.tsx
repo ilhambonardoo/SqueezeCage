@@ -1,11 +1,21 @@
 "use client";
 
 import { useMounted } from "@/src/hooks/useMounted";
-import { ArrowLeft, Calendar, Scale, Info, History, Edit } from "lucide-react";
+import {
+  ArrowLeft,
+  Calendar,
+  Scale,
+  Info,
+  History,
+  Edit,
+  Heart,
+  TrendingUp,
+  X,
+} from "lucide-react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import toast from "react-hot-toast";
 import { Kambing } from "@/src/generated/prisma/client";
 
@@ -16,6 +26,8 @@ interface DetailPageKambingProps {
 const DetailPageKambing = ({ id }: DetailPageKambingProps) => {
   const [isLoading, setIsLoading] = useState(true);
   const [data, setData] = useState<Kambing>();
+  // State untuk mengontrol visibilitas overlay foto
+  const [isPhotoOverlayOpen, setIsPhotoOverlayOpen] = useState(false);
 
   useEffect(() => {
     const kambingById = async () => {
@@ -39,6 +51,34 @@ const DetailPageKambing = ({ id }: DetailPageKambingProps) => {
     if (id) kambingById();
   }, [id]);
 
+  // Fungsi untuk menutup overlay
+  const closeOverlay = useCallback(() => {
+    setIsPhotoOverlayOpen(false);
+  }, []);
+
+  // Menambahkan listener untuk tombol Esc untuk menutup overlay
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        closeOverlay();
+      }
+    };
+
+    if (isPhotoOverlayOpen) {
+      window.addEventListener("keydown", handleKeyDown);
+      // Mencegah scrolling pada body saat overlay terbuka
+      document.body.style.overflow = "hidden";
+    } else {
+      window.removeEventListener("keydown", handleKeyDown);
+      document.body.style.overflow = "";
+    }
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+      document.body.style.overflow = "";
+    };
+  }, [isPhotoOverlayOpen, closeOverlay]);
+
   const router = useRouter();
   const mounted = useMounted();
 
@@ -46,19 +86,24 @@ const DetailPageKambing = ({ id }: DetailPageKambingProps) => {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-100">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-600"></div>
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="relative w-16 h-16">
+          <div className="absolute inset-0 rounded-full border-4 border-amber-500/20 animate-pulse"></div>
+          <div className="absolute inset-0 rounded-full border-4 border-t-amber-600 animate-spin"></div>
+        </div>
       </div>
     );
   }
 
   if (!data) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-100 gap-4">
-        <p className="text-neutral-500">Data kambing tidak ditemukan</p>
+      <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
+        <p className="text-neutral-400 font-medium tracking-wide">
+          Data kambing tidak ditemukan
+        </p>
         <button
           onClick={() => router.back()}
-          className="px-4 py-2 bg-neutral-200 dark:bg-neutral-800 rounded-xl"
+          className="px-5 py-2.5 bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-800 dark:hover:bg-neutral-700 rounded-xl font-semibold text-sm transition-all"
         >
           Kembali
         </button>
@@ -66,69 +111,74 @@ const DetailPageKambing = ({ id }: DetailPageKambingProps) => {
     );
   }
 
+  const masaTernak = Math.floor(
+    (new Date().getTime() - new Date(data.tgl_Masuk).getTime()) /
+      (1000 * 60 * 60 * 24),
+  );
+  const kenaikanBerat = data.beratAkhir - data.beratAwal;
+
   return (
-    <div className="flex flex-col gap-8 max-w-6xl mx-auto w-full py-10">
-      {/* Header Section */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sm:mb-2 ml-2">
+    <div className="max-w-6xl mx-auto w-full px-4 py-8 lg:py-12 selection:bg-amber-200">
+      {/* Dynamic Floating Action Header */}
+      <div className="flex justify-between items-center mb-12">
         <button
           onClick={() => router.back()}
-          className="flex items-center justify-center gap-2 px-6 py-3 bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-800 dark:hover:bg-neutral-700 text-neutral-900 dark:text-white rounded-2xl transition-all font-bold text-sm shadow-sm active:scale-95"
+          className="group flex items-center justify-center w-12 h-12 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-2xl hover:border-neutral-400 dark:hover:border-neutral-600 transition-all duration-300 active:scale-95 shadow-sm"
         >
-          <ArrowLeft size={18} />
+          <ArrowLeft
+            size={18}
+            className="group-hover:-translate-x-0.5 transition-transform"
+          />
         </button>
-      </div>
-      <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-10">
-        <div className="max-w-xl ml-5 mb-5">
-          <h1 className="mb-4 text-4xl font-bold tracking-tight md:text-5xl font-plenty text-neutral-900 dark:text-white">
-            Detail{" "}
-            <span className="text-amber-700 dark:text-amber-600">Ternak</span>
-          </h1>
-          <p className="text-lg text-neutral-600 dark:text-neutral-400">
-            Informasi lengkap mengenai ternak Anda. Pantau perkembangan berat,
-            umur, dan status kesehatan di satu tempat.
-          </p>
-        </div>
+
         <Link
           href={`/kambing/edit/${id}`}
-          className="flex items-center justify-center gap-2 px-6 py-3 bg-amber-600 hover:bg-amber-700 text-white rounded-2xl transition-all font-bold text-sm shadow-lg shadow-amber-600/20 active:scale-95"
+          className="flex items-center gap-2 px-5 py-3 bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 rounded-2xl hover:opacity-90 transition-all font-semibold text-sm tracking-wide shadow-xl shadow-neutral-900/10 dark:shadow-none active:scale-95"
         >
-          <Edit size={18} />
+          <Edit size={16} />
           Edit Informasi
         </Link>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 px-5">
-        {/* Left Column: Image & Badges */}
-        <div className="lg:col-span-4 flex flex-col gap-6">
-          <div className="bg-white dark:bg-neutral-900 p-2 rounded-[2.5rem] border border-neutral-200 dark:border-neutral-800 shadow-xl shadow-neutral-200/50 dark:shadow-none overflow-hidden">
-            <div className="relative aspect-square w-full rounded-4xl overflow-hidden bg-neutral-100 dark:bg-neutral-800 group">
+      {/* Main Content Layout - Asymmetric Modern Look */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
+        {/* Left Column: Cinematic Visual Card */}
+        <div className="lg:col-span-5 space-y-6">
+          <div
+            className={`relative group rounded-[2.5rem] overflow-hidden bg-neutral-100 dark:bg-neutral-900 border border-neutral-200/60 dark:border-neutral-800/60 shadow-2xl shadow-neutral-200/40 dark:shadow-none ${data.imageUrl ? "cursor-zoom-in" : ""}`}
+            // Menampilkan overlay saat card diklik jika ada foto
+            onClick={() => data.imageUrl && setIsPhotoOverlayOpen(true)}
+          >
+            <div className="relative aspect-[4/5] w-full overflow-hidden">
               {data.imageUrl ? (
                 <Image
                   src={data.imageUrl}
                   alt={data.nama}
                   fill
-                  className="object-cover transition-transform duration-700 group-hover:scale-110"
+                  priority
+                  className="object-cover transition-transform duration-1000 ease-out group-hover:scale-105"
                 />
               ) : (
-                <div className="flex flex-col items-center justify-center h-full text-neutral-400 gap-2">
-                  <div className="p-4 bg-neutral-200 dark:bg-neutral-700 rounded-full">
-                    <Info size={32} />
+                <div className="flex flex-col items-center justify-center h-full text-neutral-400 gap-3 bg-gradient-to-b from-neutral-50 to-neutral-100 dark:from-neutral-900 dark:to-neutral-950">
+                  <div className="p-4 bg-white dark:bg-neutral-800 rounded-3xl shadow-sm">
+                    <Info size={28} className="text-neutral-400" />
                   </div>
-                  <span className="text-sm font-medium">
+                  <span className="text-xs font-semibold tracking-wider uppercase opacity-60">
                     Foto tidak tersedia
                   </span>
                 </div>
               )}
-              {/* Status Badge Overlay */}
-              <div className="absolute top-4 left-4 flex gap-2">
-                <span className="px-3 py-1.5 rounded-full bg-white/90 dark:bg-neutral-900/90 backdrop-blur-md text-[10px] font-bold uppercase tracking-widest shadow-sm">
+
+              {/* Artistic Blur Overlay Badges */}
+              <div className="absolute bottom-6 left-6 right-6 flex flex-wrap gap-2 pointer-events-none">
+                <span className="px-4 py-2 rounded-xl bg-black/40 backdrop-blur-md text-[11px] font-bold text-white uppercase tracking-widest border border-white/10">
                   {data.jenis_hewan}
                 </span>
                 <span
-                  className={`px-3 py-1.5 rounded-full backdrop-blur-md text-[10px] font-bold uppercase tracking-widest shadow-sm ${
+                  className={`px-4 py-2 rounded-xl backdrop-blur-md text-[11px] font-bold uppercase tracking-widest border ${
                     data.jenis_kelamin === "JANTAN"
-                      ? "bg-blue-500/10 text-blue-600 border border-blue-500/20"
-                      : "bg-pink-500/10 text-pink-600 border border-pink-500/20"
+                      ? "bg-blue-500/20 text-blue-200 border-blue-400/20"
+                      : "bg-pink-500/20 text-pink-200 border-pink-400/20"
                   }`}
                 >
                   {data.jenis_kelamin}
@@ -137,137 +187,193 @@ const DetailPageKambing = ({ id }: DetailPageKambingProps) => {
             </div>
           </div>
 
-          {/* Quick Stats Card */}
-          <div className="bg-amber-600 rounded-4xl p-6 text-white shadow-lg shadow-amber-600/30">
-            <h3 className="text-amber-100/80 text-xs font-bold uppercase tracking-widest mb-4">
-              Ringkasan Status
-            </h3>
-            <div className="flex flex-col gap-4">
-              <div className="flex items-center justify-between border-b border-amber-500/30 pb-3">
-                <span className="text-sm">Status Hamil</span>
-                <span className="font-bold">
-                  {data.statusHamil === "HAMIL" ? "Ya" : "Tidak"}
-                </span>
+          {/* Health & Pregnancy Quick Badge */}
+          {data.statusHamil === "HAMIL" && (
+            <div className="flex items-center gap-4 p-5 bg-pink-50 dark:bg-pink-950/20 border border-pink-100 dark:border-pink-900/30 rounded-3xl animate-pulse">
+              <div className="w-10 h-10 bg-pink-500 rounded-2xl flex items-center justify-center text-white shadow-md shadow-pink-500/20">
+                <Heart size={18} fill="currentColor" />
               </div>
-              <div className="flex items-center justify-between border-b border-amber-500/30 pb-3">
-                <span className="text-sm">Masa Ternak</span>
-                <span className="font-bold whitespace-nowrap">
-                  {Math.floor(
-                    (new Date().getTime() -
-                      new Date(data.tgl_Masuk).getTime()) /
-                      (1000 * 60 * 60 * 24),
-                  )}{" "}
-                  Hari
-                </span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm">Kenaikan Berat</span>
-                <span className="font-bold">
-                  +{data.beratAkhir - data.beratAwal} kg
-                </span>
+              <div>
+                <p className="text-xs font-bold text-pink-700 dark:text-pink-400 uppercase tracking-wider">
+                  Status Khusus
+                </p>
+                <p className="text-sm font-semibold text-pink-900 dark:text-pink-300">
+                  Ternak sedang dalam masa kehamilan
+                </p>
               </div>
             </div>
-          </div>
-        </div>
-
-        {/* Right Column: Detailed Cards */}
-        <div className="lg:col-span-8 flex flex-col gap-6">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
-            <InfoCard
-              icon={<Scale className="text-amber-600" />}
-              label="Berat Saat Ini"
-              value={`${data.beratAkhir} kg`}
-              subValue={`${data.beratAwal} kg (Berat Awal)`}
-              color="amber"
-            />
-            <InfoCard
-              icon={<Calendar className="text-blue-600" />}
-              label="Umur"
-              value={`${data.umur} Bulan`}
-              subValue={`Lahir: ${new Date(data.tgl_lahir!).toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" })}`}
-              color="blue"
-            />
-
-            <InfoCard
-              icon={<History className="text-purple-600" />}
-              label="Tanggal Masuk"
-              value={new Date(data.tgl_Masuk).toLocaleDateString("id-ID", {
-                day: "numeric",
-                month: "long",
-                year: "numeric",
-              })}
-              subValue="Tercatat di sistem"
-              color="purple"
-            />
-          </div>
-
-          {/* New Section: Catatan Perawatan (Placeholder/Future Proof) */}
-          <div className="bg-white dark:bg-neutral-900 rounded-4xl border border-neutral-200 dark:border-neutral-800 p-8 shadow-sm">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-bold flex items-center gap-3">
-                <div className="p-2 bg-neutral-100 dark:bg-neutral-800 rounded-xl">
-                  <History size={20} className="text-amber-600" />
-                </div>
-                Log Aktivitas
-              </h2>
-              <button className="text-xs font-bold text-amber-600 hover:underline">
-                Lihat Semua
-              </button>
-            </div>
-            <div className="flex flex-col gap-4">
-              <div className="p-4 bg-neutral-50 dark:bg-neutral-800/50 rounded-2xl border border-neutral-100 dark:border-neutral-800 flex justify-between items-center italic text-neutral-500 text-sm">
-                Belum ada catatan riwayat penimbangan tambahan untuk saat ini.
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-const InfoCard = ({
-  icon,
-  label,
-  value,
-  subValue,
-  color,
-}: {
-  icon: React.ReactNode;
-  label: string;
-  value: string | number;
-  subValue?: string;
-  color: string;
-}) => {
-  const colorStyles: Record<string, string> = {
-    amber: "bg-amber-50 dark:bg-amber-600/10 text-amber-600",
-    blue: "bg-blue-50 dark:bg-blue-600/10 text-blue-600",
-    emerald: "bg-emerald-50 dark:bg-emerald-600/10 text-emerald-600",
-    purple: "bg-purple-50 dark:bg-purple-600/10 text-purple-600",
-  };
-
-  return (
-    <div className="group bg-white dark:bg-neutral-900 p-6 rounded-4xl border border-neutral-200 dark:border-neutral-800 shadow-sm hover:shadow-md transition-all hover:-translate-y-1">
-      <div className="flex flex-col gap-4">
-        <div
-          className={`w-12 h-12 flex items-center justify-center rounded-2xl transition-transform group-hover:scale-110 duration-300 ${colorStyles[color] || "bg-neutral-50"}`}
-        >
-          {icon}
-        </div>
-        <div>
-          <p className="text-[10px] text-neutral-500 font-bold uppercase tracking-widest mb-1">
-            {label}
-          </p>
-          <p className="text-xl font-black text-neutral-900 dark:text-white tracking-tight">
-            {value}
-          </p>
-          {subValue && (
-            <p className="text-xs text-neutral-400 mt-1 font-medium italic">
-              {subValue}
-            </p>
           )}
         </div>
+
+        {/* Right Column: Information Flow */}
+        <div className="lg:col-span-7 space-y-8 lg:pt-4">
+          {/* Header Title Typography */}
+          <div>
+            <span className="text-xs font-bold uppercase tracking-widest text-amber-600 dark:text-amber-500">
+              ID Ternak: #{id.slice(-5)}
+            </span>
+            <h1 className="mt-2 text-4xl lg:text-5xl font-extrabold tracking-tight text-neutral-950 dark:text-white capitalize">
+              {data.nama || "Tanpa Nama"}
+            </h1>
+          </div>
+
+          <hr className="border-neutral-200 dark:border-neutral-800" />
+
+          {/* Grid Stats Minimalist */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            {/* Weight Card */}
+            <div className="p-6 bg-neutral-50 dark:bg-neutral-900/50 border border-neutral-200/50 dark:border-neutral-800/50 rounded-3xl transition-all hover:bg-neutral-100/50 dark:hover:bg-neutral-900">
+              <div className="flex items-center gap-3 mb-4 text-neutral-500">
+                <Scale size={18} />
+                <span className="text-xs font-bold uppercase tracking-wider">
+                  Massa Tubuh
+                </span>
+              </div>
+              <div className="flex items-baseline gap-2">
+                <span className="text-3xl font-black tracking-tight text-neutral-900 dark:text-white">
+                  {data.beratAkhir}
+                </span>
+                <span className="text-sm font-bold text-neutral-400">kg</span>
+              </div>
+              <p className="text-xs text-neutral-400 mt-2">
+                Berat awal:{" "}
+                <span className="font-semibold">{data.beratAwal} kg</span>
+              </p>
+            </div>
+
+            {/* Age Card */}
+            <div className="p-6 bg-neutral-50 dark:bg-neutral-900/50 border border-neutral-200/50 dark:border-neutral-800/50 rounded-3xl transition-all hover:bg-neutral-100/50 dark:hover:bg-neutral-900">
+              <div className="flex items-center gap-3 mb-4 text-neutral-500">
+                <Calendar size={18} />
+                <span className="text-xs font-bold uppercase tracking-wider">
+                  Estimasi Umur
+                </span>
+              </div>
+              <div className="flex items-baseline gap-2">
+                <span className="text-3xl font-black tracking-tight text-neutral-900 dark:text-white">
+                  {data.umur}
+                </span>
+                <span className="text-sm font-bold text-neutral-400">
+                  Bulan
+                </span>
+              </div>
+              <p className="text-xs text-neutral-400 mt-2">
+                Lahir:{" "}
+                <span className="font-semibold">
+                  {data.tgl_lahir
+                    ? new Date(data.tgl_lahir).toLocaleDateString("id-ID", {
+                        month: "short",
+                        year: "numeric",
+                      })
+                    : "-"}
+                </span>
+              </p>
+            </div>
+          </div>
+
+          {/* Progress Analytics Minimalist */}
+          <div className="p-6 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-3xl space-y-6">
+            <h3 className="text-sm font-bold uppercase tracking-wider text-neutral-400 flex items-center gap-2">
+              <TrendingUp size={16} /> Metrik Perkembangan
+            </h3>
+
+            <div className="space-y-4">
+              {/* Progress 1: Masa Ternak */}
+              <div>
+                <div className="flex justify-between text-xs font-semibold mb-2">
+                  <span className="text-neutral-500">Durasi Pemeliharaan</span>
+                  <span className="text-neutral-900 dark:text-white font-bold">
+                    {masaTernak} Hari
+                  </span>
+                </div>
+                <div className="w-full h-2 bg-neutral-100 dark:bg-neutral-800 rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-amber-600 rounded-full"
+                    style={{ width: `${Math.min(masaTernak / 3.65, 100)}%` }}
+                  ></div>
+                </div>
+                <p className="text-[11px] text-neutral-400 mt-1 italic">
+                  Masuk pada{" "}
+                  {new Date(data.tgl_Masuk).toLocaleDateString("id-ID", {
+                    day: "numeric",
+                    month: "long",
+                    year: "numeric",
+                  })}
+                </p>
+              </div>
+
+              {/* Progress 2: Kenaikan Berat */}
+              <div>
+                <div className="flex justify-between text-xs font-semibold mb-2">
+                  <span className="text-neutral-500">Tren Pertumbuhan</span>
+                  <span
+                    className={`font-bold ${kenaikanBerat >= 0 ? "text-emerald-600" : "text-rose-600"}`}
+                  >
+                    {kenaikanBerat >= 0 ? `+${kenaikanBerat}` : kenaikanBerat}{" "}
+                    kg
+                  </span>
+                </div>
+                <div className="w-full h-2 bg-neutral-100 dark:bg-neutral-800 rounded-full overflow-hidden">
+                  <div
+                    className={`h-full rounded-full ${kenaikanBerat >= 0 ? "bg-emerald-500" : "bg-rose-500"}`}
+                    style={{
+                      width: `${Math.min(Math.abs(kenaikanBerat) * 4, 100)}%`,
+                    }}
+                  ></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Activity Logs Section */}
+          <div className="pt-2">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-md font-bold tracking-tight flex items-center gap-2 text-neutral-800 dark:text-neutral-200">
+                <History size={16} className="text-neutral-400" />
+                Catatan Aktivitas Belakangan
+              </h2>
+            </div>
+            <div className="p-5 bg-neutral-50 dark:bg-neutral-900/30 rounded-2xl border border-dashed border-neutral-200 dark:border-neutral-800 text-center">
+              <p className="text-xs italic text-neutral-400">
+                Belum ada log penimbangan atau riwayat medis tambahan yang
+                direkam untuk hewan ini.
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
+
+      {/* Photo Overlay (Lightbox) */}
+      {isPhotoOverlayOpen && data.imageUrl && (
+        // Overlay Latar Belakang (Gelap Transparan)
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-sm cursor-zoom-out animate-fade-in"
+          // Menutup overlay jika latar belakang diklik
+          onClick={closeOverlay}
+        >
+          {/* Tombol Tutup (Pojok Kanan Atas) */}
+          <button
+            className="absolute top-6 right-6 p-2 rounded-full bg-neutral-800/50 text-white hover:bg-neutral-700/50 transition-colors"
+            onClick={closeOverlay}
+          >
+            <X size={24} />
+          </button>
+
+          {/* Kontainer Foto (Agar foto tidak terlalu besar dan responsif) */}
+          <div className="relative w-full h-full max-w-7xl max-h-[90vh] flex items-center justify-center">
+            {/* Foto Ukuran Penuh */}
+            <Image
+              src={data.imageUrl}
+              alt={data.nama}
+              width={1600} // Lebar maksimum foto
+              height={1600} // Tinggi maksimum foto
+              className="max-w-full max-h-full object-contain rounded-2xl shadow-2xl animate-scale-in"
+              // Mencegah klik pada foto menutup overlay
+              onClick={(e) => e.stopPropagation()}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 };
