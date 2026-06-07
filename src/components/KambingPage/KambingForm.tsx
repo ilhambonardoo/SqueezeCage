@@ -1,12 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Image from "next/image";
 import { ImagePlus, Save, Trash2, UploadCloud } from "lucide-react";
 import toast from "react-hot-toast";
 import { useSession } from "next-auth/react";
-import { useUploadThing } from "@/src/hooks/useUploadthing";
-import { deleteImage } from "@/src/services/kambing-services";
 import {
   Kambing,
   JenisHewan,
@@ -20,7 +18,6 @@ export const KambingForm = ({
   onSubmit,
   isSubmitting,
   submitLabel,
-  localStorageKeySuffix = "create",
 }: KambingFormProps) => {
   const { data: session } = useSession();
   const [nama, setNama] = useState(initialData?.nama || "");
@@ -48,9 +45,11 @@ export const KambingForm = ({
   const [statusHamil, setStatusHamil] = useState<StatusKehamilan>(
     (initialData?.statusHamil as StatusKehamilan) || "TIDAK_HAMIL",
   );
-  const [imgUrl, setImgUrl] = useState(initialData?.imageUrl || "");
-  const [imgKey, setImgKey] = useState(initialData?.imageKey || "");
-  const [isDeleting, setIsDeleting] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(
+    initialData?.imageUrl || null,
+  );
+  const [isImageRemoved, setIsImageRemoved] = useState(false);
   const [errors, setErrors] = useState<Record<string, string[]>>({});
 
   // Reset form states when initialData changes (Adjusting state during render)
@@ -76,79 +75,37 @@ export const KambingForm = ({
       );
 
       // Also sync images from initialData here
-      setImgUrl(initialData.imageUrl || "");
-      setImgKey(initialData.imageKey || "");
+      setPreviewUrl(initialData.imageUrl || null);
+      setIsImageRemoved(false);
+      setSelectedFile(null);
     }
   }
 
-  // Mengsikronkan localstorage hanya pada saat di mount
-  useEffect(() => {
-    const savedUrl = localStorage.getItem(
-      `temp_kambing_url_${localStorageKeySuffix}`,
-    );
-    const savedKey = localStorage.getItem(
-      `temp_kambing_key_${localStorageKeySuffix}`,
-    );
-    const isDeleted =
-      localStorage.getItem(`temp_kambing_deleted_${localStorageKeySuffix}`) ===
-      "true";
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
 
-    if (isDeleted) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setImgUrl("");
-      setImgKey("");
-    } else if (savedUrl && savedKey) {
-      setImgUrl(savedUrl);
-      setImgKey(savedKey);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  const { startUpload, isUploading } = useUploadThing("imageUploader", {
-    onClientUploadComplete: async (res) => {
-      const url = res[0].ufsUrl || res[0].url;
-      const key = res[0].key;
-
-      if (imgKey) await deleteImage(imgKey);
-
-      if (url) {
-        setImgUrl(url);
-        setImgKey(key);
-        localStorage.setItem(`temp_kambing_url_${localStorageKeySuffix}`, url);
-        localStorage.setItem(`temp_kambing_key_${localStorageKeySuffix}`, key);
-        localStorage.removeItem(
-          `temp_kambing_deleted_${localStorageKeySuffix}`,
-        );
-        toast.success("Foto berhasil diunggah");
+    if (file) {
+      if (file.size > 4 * 1024 * 1024) {
+        toast.error("Ukuran file terlalu besar! Maksimal 4MB.");
+        return;
       }
-    },
-    onUploadError: (err) => {
-      toast.error(`Gagal upload: ${err.message}`);
-    },
-  });
 
-  const handleRemoveImage = async () => {
-    setIsDeleting(true);
-    try {
-      if (imgKey) await deleteImage(imgKey);
-      setImgUrl("");
-      setImgKey("");
-      localStorage.setItem(
-        `temp_kambing_deleted_${localStorageKeySuffix}`,
-        "true",
-      );
-      localStorage.removeItem(`temp_kambing_url_${localStorageKeySuffix}`);
-      localStorage.removeItem(`temp_kambing_key_${localStorageKeySuffix}`);
-      toast.success("Foto berhasil dihapus");
-    } catch (error) {
-      console.error(error);
-      toast.error("Gagal menghapus foto");
-    } finally {
-      setIsDeleting(false);
+      setSelectedFile(file);
+      setIsImageRemoved(false);
+
+      const localUrl = URL.createObjectURL(file);
+      setPreviewUrl(localUrl);
     }
   };
 
-  const handleFormSubmit = (e: React.FormEvent) => {
+  const handleRemoveImage = async () => {
+    setSelectedFile(null);
+    setPreviewUrl(null);
+    setIsImageRemoved(true);
+    toast.success("Foto dilepas (Klik simpan untuk menyimpan)");
+  };
+
+  const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!nama || !kodeKambing) {
       toast.error("Data penting harus diisi");
@@ -159,7 +116,7 @@ export const KambingForm = ({
       return;
     }
 
-    onSubmit({
+    const baseFormPayload = {
       nama,
       kode_kambing: kodeKambing,
       jenis_hewan: jenisHewan,
@@ -169,10 +126,10 @@ export const KambingForm = ({
       tgl_lahir: tglLahir ? new Date(tglLahir) : null,
       umur: parseInt(umur) || 0,
       statusHamil: jenisKelamin === "BETINA" ? statusHamil : "TIDAK_HAMIL",
-      imageUrl: imgUrl,
-      imageKey: imgKey,
       userId: session?.user?.id ?? null,
-    } as Kambing);
+    } as Kambing;
+
+    await onSubmit(baseFormPayload, selectedFile, isImageRemoved);
   };
 
   return (
@@ -242,95 +199,59 @@ export const KambingForm = ({
           </select>
         </div>
 
-        {/* PHOTO UPLOAD */}
+        {/* SECTION PREVIEW & PICKER FOTO (SUDAH DIOPTIMASI) */}
         <div className="flex flex-col gap-2">
           <label className="text-sm font-medium text-neutral-700 dark:text-neutral-300">
             Foto Kambing
           </label>
-          {imgUrl ? (
+          {previewUrl ? (
             <div className="relative group rounded-xl overflow-hidden border border-neutral-200 dark:border-neutral-800 bg-neutral-100 dark:bg-neutral-800">
               <Image
                 width={400}
                 height={400}
-                src={imgUrl}
+                src={previewUrl}
                 alt="Preview"
                 className="w-full h-52 object-contain bg-neutral-50 dark:bg-neutral-900"
+                unoptimized={previewUrl.startsWith("blob:")} // Agar tidak error membaca local object blob url
               />
-              <div
-                className={`absolute inset-0 bg-black/40 transition-opacity flex items-center justify-center gap-3 ${
-                  isDeleting
-                    ? "opacity-100"
-                    : "opacity-0 group-hover:opacity-100"
-                }`}
-              >
+              <div className="absolute inset-0 bg-black/40 transition-opacity flex items-center justify-center gap-3 opacity-0 group-hover:opacity-100">
                 <button
                   type="button"
                   onClick={handleRemoveImage}
-                  disabled={isDeleting || isUploading}
-                  className="p-3 bg-red-500 text-white rounded-full hover:bg-red-600 transform hover:scale-110 transition-all shadow-lg cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="p-3 bg-red-500 text-white rounded-full hover:bg-red-600 transform hover:scale-110 transition-all shadow-lg cursor-pointer"
                   title="Hapus Foto"
                 >
-                  {isDeleting ? (
-                    <div className="animate-spin rounded-full w-5 h-5 border-2 border-white border-t-transparent" />
-                  ) : (
-                    <Trash2 size={20} />
-                  )}
+                  <Trash2 size={20} />
                 </button>
-                <label
-                  className={`p-3 bg-amber-600 text-white rounded-full hover:bg-amber-700 transform hover:scale-110 transition-all shadow-lg cursor-pointer ${
-                    isDeleting || isUploading
-                      ? "opacity-50 cursor-not-allowed"
-                      : ""
-                  }`}
-                >
+                <label className="p-3 bg-amber-600 text-white rounded-full hover:bg-amber-700 transform hover:scale-110 transition-all shadow-lg cursor-pointer">
                   <ImagePlus size={20} />
                   <input
                     type="file"
                     className="hidden"
                     accept="image/*"
-                    disabled={isDeleting || isUploading}
-                    onChange={(e) =>
-                      e.target.files?.[0] && startUpload([e.target.files[0]])
-                    }
+                    onChange={handleFileChange}
                   />
                 </label>
               </div>
             </div>
           ) : (
-            <label
-              className={`flex flex-col items-center justify-center w-full h-52 border-2 border-dashed rounded-xl cursor-pointer transition-all ${
-                isUploading
-                  ? "bg-amber-50/50 border-amber-300 dark:bg-amber-900/10 dark:border-amber-800"
-                  : "bg-neutral-50 hover:bg-neutral-100 dark:bg-neutral-800/50 dark:border-neutral-700 dark:hover:bg-neutral-800 border-neutral-300 hover:border-amber-500 shadow-sm"
-              }`}
-            >
-              {isUploading ? (
-                <div className="flex flex-col items-center gap-3">
-                  <div className="animate-spin rounded-full w-8 h-8 border-4 border-amber-700 border-t-transparent" />
-                  <span className="text-sm font-medium text-amber-800 dark:text-amber-500">
-                    Sedang Mengunggah...
-                  </span>
+            <label className="flex flex-col items-center justify-center w-full h-52 border-2 border-dashed rounded-xl cursor-pointer transition-all bg-neutral-50 hover:bg-neutral-100 dark:bg-neutral-800/50 dark:border-neutral-700 dark:hover:bg-neutral-800 border-neutral-300 hover:border-amber-500 shadow-sm">
+              <div className="flex flex-col items-center gap-2">
+                <div className="p-4 bg-amber-100 dark:bg-amber-900/30 rounded-full text-amber-700 dark:text-amber-500 mb-1">
+                  <UploadCloud size={32} />
                 </div>
-              ) : (
-                <div className="flex flex-col items-center gap-2">
-                  <div className="p-4 bg-amber-100 dark:bg-amber-900/30 rounded-full text-amber-700 dark:text-amber-500 mb-1">
-                    <UploadCloud size={32} />
-                  </div>
-                  <span className="text-sm font-semibold text-neutral-600 dark:text-neutral-300">
-                    Klik untuk unggah foto
-                  </span>
-                  <span className="text-xs text-neutral-400 dark:text-neutral-500">
-                    PNG, JPG atau WEBP (Maks. 4MB)
-                  </span>
-                </div>
-              )}
+                <span className="text-sm font-semibold text-neutral-600 dark:text-neutral-300">
+                  Klik untuk pilih foto
+                </span>
+                <span className="text-xs text-neutral-400 dark:text-neutral-500">
+                  PNG, JPG atau WEBP (Maks. 4MB)
+                </span>
+              </div>
               <input
                 type="file"
                 className="hidden"
                 accept="image/*"
-                onChange={(e) =>
-                  e.target.files?.[0] && startUpload([e.target.files[0]])
-                }
+                onChange={handleFileChange}
               />
             </label>
           )}
@@ -405,12 +326,13 @@ export const KambingForm = ({
           </select>
         </div>
 
+        {/* TOMBOL SUBMIT */}
         <button
           type="submit"
-          disabled={isSubmitting || isUploading}
-          className={`mt-auto h-14 flex items-center justify-center bg-amber-700 text-white rounded-xl font-bold hover:bg-amber-800 disabled:opacity-70 gap-2 shadow-lg ${isUploading || isSubmitting ? "cursor-progress" : "cursor-pointer"}`}
+          disabled={isSubmitting}
+          className={`mt-auto h-14 flex items-center justify-center bg-amber-700 text-white rounded-xl font-bold hover:bg-amber-800 disabled:opacity-70 gap-2 shadow-lg ${isSubmitting ? "cursor-progress" : "cursor-pointer"}`}
         >
-          {isSubmitting || isUploading ? (
+          {isSubmitting ? (
             <div className="animate-spin rounded-full w-5 h-5 border-2 border-white/30 border-t-white" />
           ) : (
             <>

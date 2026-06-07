@@ -23,10 +23,13 @@ export interface KambingModel {
 
 export interface KambingFormProps {
   initialData?: KambingModel | null;
-  onSubmit: (data: Kambing) => Promise<void>;
+  onSubmit: (
+    data: Kambing,
+    file: File | null,
+    isImageRemoved: boolean,
+  ) => Promise<void>;
   isSubmitting: boolean;
   submitLabel: string;
-  localStorageKeySuffix?: string;
 }
 
 export interface StatsData {
