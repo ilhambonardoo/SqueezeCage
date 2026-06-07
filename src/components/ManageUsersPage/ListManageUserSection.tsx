@@ -10,10 +10,14 @@ import Image from "next/image";
 import SearchInput from "../utils/SearchInput";
 import { useSearchPagination } from "@/src/hooks/useSearchPagination";
 import Pagination from "../utils/Pagination";
+import { useSession } from "next-auth/react";
+import toast from "react-hot-toast";
 
 const ManageUserSection = () => {
   const mounted = useMounted();
   const router = useRouter();
+  const { data: session } = useSession();
+  const currentUserId = session?.user.id;
 
   const { dataUser, isLoading, error, deleteUser } = UseUser();
   const {
@@ -28,6 +32,11 @@ const ManageUserSection = () => {
   } = useSearchPagination(dataUser, 10, ["email", "nama", "role", "username"]);
 
   const handleDelete = async (id: string) => {
+    if (id === currentUserId) {
+      toast.error("Gagal! Anda tidak bisa menghapus akun Anda sendiri.");
+      return;
+    }
+
     if (confirm("Apakah anda yakin ingin menghapus user ini?")) {
       await deleteUser(id);
     }
