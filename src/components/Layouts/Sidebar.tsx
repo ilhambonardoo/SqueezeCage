@@ -236,7 +236,7 @@ const Sidebar = () => {
                         {item.children.map((child) => {
                           const isChildActive =
                             pathname === child.href ||
-                            (child.href === "/" && pathname === "/kambing");
+                            (child.href === "/" && pathname === "/ternak");
 
                           const SubIcon = child.icon;
                           return (

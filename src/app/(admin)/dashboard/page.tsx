@@ -1,14 +1,14 @@
-import CardInfoKambing from "@/src/components/DashboardPage/CardInfoKambing";
+import CardInfoTernak from "@/src/components/DashboardPage/CardInfoTernak";
 import HeroSectionDashboard from "@/src/components/DashboardPage/HeroSectionDashboard";
-import PrediksiKambing from "@/src/components/DashboardPage/PrediksiKambing";
+import PrediksiTernak from "@/src/components/DashboardPage/PrediksiTernak";
 
 const page = () => {
   return (
     <>
       <div className="bg-neutral-200 dark:bg-neutral-950 rounded-3xl">
         <HeroSectionDashboard />
-        <PrediksiKambing />
-        <CardInfoKambing />
+        <PrediksiTernak />
+        <CardInfoTernak />
       </div>
     </>
   );

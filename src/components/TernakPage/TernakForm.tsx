@@ -6,24 +6,22 @@ import { ImagePlus, Save, Trash2, UploadCloud } from "lucide-react";
 import toast from "react-hot-toast";
 import { useSession } from "next-auth/react";
 import {
-  Kambing,
+  Ternak,
   JenisHewan,
   JenisKelamin,
   StatusKehamilan,
 } from "@/src/generated/prisma/client";
-import { KambingFormProps } from "@/src/interface/kambing";
+import { TernakFormProps } from "@/src/interface/ternak";
 
-export const KambingForm = ({
+export const TernakForm = ({
   initialData,
   onSubmit,
   isSubmitting,
   submitLabel,
-}: KambingFormProps) => {
+}: TernakFormProps) => {
   const { data: session } = useSession();
   const [nama, setNama] = useState(initialData?.nama || "");
-  const [kodeKambing, setKodeKambing] = useState(
-    initialData?.kode_kambing || "",
-  );
+  const [kodeHewan, setKodeHewan] = useState(initialData?.kode_hewan || "");
   const [jenisHewan, setJenisHewan] = useState<JenisHewan>(
     (initialData?.jenis_hewan as JenisHewan) || "KAMBING",
   );
@@ -59,7 +57,7 @@ export const KambingForm = ({
     setPrevInitialData(initialData);
     if (initialData) {
       setNama(initialData.nama || "");
-      setKodeKambing(initialData.kode_kambing || "");
+      setKodeHewan(initialData.kode_hewan || "");
       setJenisHewan((initialData.jenis_hewan as JenisHewan) || "KAMBING");
       setBeratAwal(initialData.beratAwal?.toString() || "");
       setBeratAkhir(initialData.beratAkhir?.toString() || "");
@@ -107,18 +105,18 @@ export const KambingForm = ({
 
   const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!nama || !kodeKambing) {
+    if (!nama || !kodeHewan) {
       toast.error("Data penting harus diisi");
       setErrors({
         nama: !nama ? ["Nama harus diisi"] : [],
-        kode_kambing: !kodeKambing ? ["Kode harus diisi"] : [],
+        kode_hewan: !kodeHewan ? ["Kode harus diisi"] : [],
       });
       return;
     }
 
     const baseFormPayload = {
       nama,
-      kode_kambing: kodeKambing,
+      kode_hewan: kodeHewan,
       jenis_hewan: jenisHewan,
       beratAwal: parseFloat(beratAwal) || 0,
       beratAkhir: parseFloat(beratAkhir) || parseFloat(beratAwal) || 0,
@@ -127,7 +125,7 @@ export const KambingForm = ({
       umur: parseInt(umur) || 0,
       statusHamil: jenisKelamin === "BETINA" ? statusHamil : "TIDAK_HAMIL",
       userId: session?.user?.id ?? null,
-    } as Kambing;
+    } as Ternak;
 
     await onSubmit(baseFormPayload, selectedFile, isImageRemoved);
   };
@@ -141,7 +139,7 @@ export const KambingForm = ({
         {/* INPUT NAMA */}
         <div className="flex flex-col gap-2">
           <label className="text-sm font-medium text-neutral-700 dark:text-neutral-300">
-            Nama Kambing
+            Nama Hewan
           </label>
           <input
             type="text"
@@ -158,12 +156,12 @@ export const KambingForm = ({
         {/* INPUT KODE */}
         <div className="flex flex-col gap-2">
           <label className="text-sm font-medium text-neutral-700 dark:text-neutral-300">
-            Kode Kambing
+            Kode Hewan
           </label>
           <input
             type="text"
-            value={kodeKambing}
-            onChange={(e) => setKodeKambing(e.target.value)}
+            value={kodeHewan}
+            onChange={(e) => setKodeHewan(e.target.value)}
             placeholder="Contoh: KMB-001"
             className="p-3 rounded-xl border border-neutral-300 dark:border-neutral-700 bg-transparent text-neutral-900 dark:text-white outline-none"
           />
@@ -202,7 +200,7 @@ export const KambingForm = ({
         {/* SECTION PREVIEW & PICKER FOTO (SUDAH DIOPTIMASI) */}
         <div className="flex flex-col gap-2">
           <label className="text-sm font-medium text-neutral-700 dark:text-neutral-300">
-            Foto Kambing
+            Foto Ternak
           </label>
           {previewUrl ? (
             <div className="relative group rounded-xl overflow-hidden border border-neutral-200 dark:border-neutral-800 bg-neutral-100 dark:bg-neutral-800">

@@ -13,7 +13,7 @@ export async function proxy(req: NextRequest) {
   const onlySignIn = [
     "/dashboard",
     "/profile",
-    "/kambing",
+    "/ternak",
     "/timbangan",
     "/users",
   ];
@@ -48,7 +48,7 @@ export const config = {
     "/users/:path*",
     "/login",
     "/register",
-    "/kambing/:path*",
+    "/ternak/:path*",
     "/timbangan:path*",
   ],
 };

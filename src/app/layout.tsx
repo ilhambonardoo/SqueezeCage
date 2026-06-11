@@ -31,7 +31,7 @@ const plentyFont = localFont({
 
 export const metadata: Metadata = {
   title: "IoTernak",
-  description: "Platform Manajemen Kambing",
+  description: "Platform Manajemen Hewan",
 };
 
 export default function RootLayout({

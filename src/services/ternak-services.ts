@@ -1,32 +1,32 @@
 "use server";
-import { KambingModel } from "@/src/interface/kambing";
+import { TernakModel } from "@/src/interface/ternak";
 import { prisma } from "@/src/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { UTApi } from "uploadthing/server";
 
 const utapi = new UTApi();
 
-export async function getAllKambing() {
-  const data = await prisma.kambing.findMany({
+export async function getAllTernak() {
+  const data = await prisma.ternak.findMany({
     orderBy: { createdAt: "desc" },
   });
 
   return { status: 200, data };
 }
 
-export async function getKambingById(id: string) {
-  const data = await prisma.kambing.findUnique({ where: { id } });
+export async function getTernakById(id: string) {
+  const data = await prisma.ternak.findUnique({ where: { id } });
   return { status: 200, data, message: "Data berhasil ditemukan" };
 }
 
-export async function deleteKambing(id: string) {
-  const existing = await prisma.kambing.findUnique({ where: { id } });
+export async function deleteTernak(id: string) {
+  const existing = await prisma.ternak.findUnique({ where: { id } });
 
   if (!existing) {
     return { status: 404, message: "Data tidak ditemukan" };
   }
 
-  const data = await prisma.kambing.delete({ where: { id } });
+  const data = await prisma.ternak.delete({ where: { id } });
 
   if (existing.imageKey) {
     await utapi.deleteFiles(existing.imageKey);
@@ -35,8 +35,8 @@ export async function deleteKambing(id: string) {
   return { status: 200, data, message: "Data berhasil dhapus" };
 }
 
-const parseKambingData = (formData: KambingModel) => ({
-  kode_kambing: formData.kode_kambing,
+const parseTernakData = (formData: TernakModel) => ({
+  kode_hewan: formData.kode_hewan,
   nama: formData.nama,
   beratAwal: Number(formData.beratAwal),
   beratAkhir: Number(formData.beratAkhir),
@@ -50,53 +50,53 @@ const parseKambingData = (formData: KambingModel) => ({
   imageKey: formData.imageKey === null ? null : formData.imageKey || null,
 });
 
-export async function createKambing(formData: KambingModel) {
-  const { kode_kambing, userId } = formData;
+export async function createTernak(formData: TernakModel) {
+  const { kode_hewan, userId } = formData;
 
   if (!userId) return { status: 400, message: "User ID Wajib ada" };
 
-  const existsingKambing = await prisma.kambing.findUnique({
-    where: { kode_kambing },
+  const existsingTernak = await prisma.ternak.findUnique({
+    where: { kode_hewan },
   });
 
-  if (existsingKambing) {
+  if (existsingTernak) {
     return {
       status: 409,
-      message: "Kambing dengan kode ini sudah terisis!",
+      message: "Ternak dengan kode ini sudah terisis!",
     };
   }
 
-  const kambing = await prisma.kambing.create({
+  const ternak = await prisma.ternak.create({
     data: {
       userId: formData.userId,
-      ...parseKambingData(formData),
+      ...parseTernakData(formData),
     },
   });
 
-  revalidatePath("/dashboard/kambing");
+  revalidatePath("/ternak");
 
   return {
     status: 201,
-    data: kambing,
-    message: "Data kambing berhasil ditambahkan!",
+    data: ternak,
+    message: "Data ternak berhasil ditambahkan!",
   };
 }
 
-export async function updateKambing(
+export async function updateTernak(
   id: string,
-  formData: KambingModel,
+  formData: TernakModel,
   oldImageKeyToDelete?: string | null,
 ) {
   if (!id) {
-    return { status: 400, message: "Kode Kambing diperlukan!" };
+    return { status: 400, message: "Kode hewan diperlukan!" };
   }
 
-  const existingKambing = await prisma.kambing.findUnique({
+  const existingTernak = await prisma.ternak.findUnique({
     where: { id },
   });
 
-  if (!existingKambing) {
-    return { status: 404, message: "Kode kambing tidak ditemukan" };
+  if (!existingTernak) {
+    return { status: 404, message: "Kode hewan tidak ditemukan" };
   }
 
   if (oldImageKeyToDelete) {
@@ -107,19 +107,19 @@ export async function updateKambing(
     }
   }
 
-  const updateKambing = await prisma.kambing.update({
+  const updateTernak = await prisma.ternak.update({
     where: { id },
     data: {
-      ...parseKambingData(formData),
+      ...parseTernakData(formData),
     },
   });
 
-  revalidatePath("/kambing");
+  revalidatePath("/ternak");
 
   return {
     status: 200,
-    data: updateKambing,
-    message: "Data kambing berhasil di ubah!",
+    data: updateTernak,
+    message: "Data ternak berhasil di ubah!",
   };
 }
 
@@ -131,21 +131,21 @@ export async function deleteImage(key: string) {
   return { success: true };
 }
 
-export async function getKambingStats() {
-  const [totalKambing, perKelamin, perJenis] = await Promise.all([
-    prisma.kambing.count(),
-    prisma.kambing.groupBy({
+export async function getTernakStats() {
+  const [totalTernak, perKelamin, perJenis] = await Promise.all([
+    prisma.ternak.count(),
+    prisma.ternak.groupBy({
       by: ["jenis_kelamin"],
       _count: { _all: true },
     }),
-    prisma.kambing.groupBy({
+    prisma.ternak.groupBy({
       by: ["jenis_hewan"],
       _count: { _all: true },
     }),
   ]);
 
   const formattedData = {
-    total: totalKambing,
+    total: totalTernak,
     jantan:
       perKelamin.find((item) => item.jenis_kelamin === "JANTAN")?._count._all ||
       0,

@@ -1,10 +1,10 @@
 "use client";
-import { useKambing } from "@/src/hooks/useKambing";
+import { useTernak } from "@/src/hooks/useTernak";
 import { useMounted } from "@/src/hooks/useMounted";
 
-const CardInfoKambing = () => {
+const CardInfoTernak = () => {
   const mounted = useMounted();
-  const { stats, isLoading } = useKambing();
+  const { stats, isLoading } = useTernak();
 
   if (!mounted) return null;
 
@@ -90,4 +90,4 @@ const CardInfoKambing = () => {
   );
 };
 
-export default CardInfoKambing;
+export default CardInfoTernak;

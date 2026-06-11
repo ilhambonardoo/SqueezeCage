@@ -5,38 +5,38 @@ import { ArrowLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { KambingForm } from "@/src/components/KambingPage/KambingForm";
-import { KambingModel } from "@/src/interface/kambing";
-import { Kambing } from "@/src/generated/prisma/client";
+import { TernakForm } from "@/src/components/TernakPage/TernakForm";
+import { TernakModel } from "@/src/interface/ternak";
+import { Ternak } from "@/src/generated/prisma/client";
 import { useUploadThing } from "@/src/hooks/useUploadthing";
 
-interface EditKambingPageProps {
+interface EditTernakPageProps {
   id: string;
 }
 
-const EditKambingPage = ({ id }: EditKambingPageProps) => {
+const EditTernakPage = ({ id }: EditTernakPageProps) => {
   const router = useRouter();
   const mounted = useMounted();
-  const [initialData, setInitialData] = useState<KambingModel | null>(null);
+  const [initialData, setInitialData] = useState<TernakModel | null>(null);
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
 
   const { startUpload } = useUploadThing("imageUploader", {
     onUploadError: (error: Error) => {
-      toast.error(`Gagal mengunggah foto kambing : ${error.message}`);
+      toast.error(`Gagal mengunggah foto ternak : ${error.message}`);
     },
   });
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await fetch(`/api/kambing/${id}`);
+        const res = await fetch(`/api/ternak/${id}`);
         if (!res.ok) throw new Error("Gagal mengambil data");
         const data = await res.json();
         setInitialData(data);
       } catch {
-        toast.error("Gagal mengambil data kambing");
-        router.push("/kambing");
+        toast.error("Gagal mengambil data ternak");
+        router.push("/ternak");
       } finally {
         setLoading(false);
       }
@@ -48,7 +48,7 @@ const EditKambingPage = ({ id }: EditKambingPageProps) => {
   }, [id, router]);
 
   const handleUpdate = async (
-    formData: Kambing,
+    formData: Ternak,
     selecetedFile: File | null,
     isImageRemoved: boolean,
   ) => {
@@ -86,7 +86,7 @@ const EditKambingPage = ({ id }: EditKambingPageProps) => {
         oldImageKeyToDelete,
       };
 
-      const res = await fetch(`/api/kambing/${id}`, {
+      const res = await fetch(`/api/ternak/${id}`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -99,8 +99,8 @@ const EditKambingPage = ({ id }: EditKambingPageProps) => {
       if (!res.ok) {
         toast.error(data.message || "Gagal memperbarui data");
       } else {
-        toast.success("Data kambing berhasil diperbarui");
-        router.push(`/kambing`);
+        toast.success("Data ternak berhasil diperbarui");
+        router.push(`/ternak`);
         router.refresh();
       }
     } catch {
@@ -127,10 +127,11 @@ const EditKambingPage = ({ id }: EditKambingPageProps) => {
         <ArrowLeft size={20} /> Kembali
       </button>
       <h1 className="text-3xl font-bold font-plenty">
-        Edit <span className="text-amber-700">Kambing</span>
+        <span className="dark:text-white text-neutral-900">Edit</span>{" "}
+        <span className="text-amber-700">Ternak</span>
       </h1>
 
-      <KambingForm
+      <TernakForm
         initialData={initialData}
         onSubmit={handleUpdate}
         isSubmitting={updating}
@@ -140,4 +141,4 @@ const EditKambingPage = ({ id }: EditKambingPageProps) => {
   );
 };
 
-export default EditKambingPage;
+export default EditTernakPage;

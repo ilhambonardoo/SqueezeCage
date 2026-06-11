@@ -31,8 +31,8 @@ export default function NotFound() {
               <span className="text-amber-700 dark:text-amber-600">Hilang</span>
             </h2>
             <p className="text-base md:text-lg text-neutral-600 dark:text-neutral-400 max-w-md mx-auto mb-10">
-              Oops! Sepertinya kambing-kambing kami melompat ke halaman yang
-              salah. Halaman yang Anda cari tidak dapat ditemukan.
+              Oops! Sepertinya hewan-hewan kami melompat ke halaman yang salah.
+              Halaman yang Anda cari tidak dapat ditemukan.
             </p>
 
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">

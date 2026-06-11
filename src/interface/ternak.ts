@@ -1,12 +1,12 @@
-import { Kambing } from "../generated/prisma/client";
+import { Ternak } from "../generated/prisma/client";
 import {
   JenisHewan,
   JenisKelamin,
   StatusKehamilan,
 } from "../generated/prisma/enums";
 
-export interface KambingModel {
-  kode_kambing: string;
+export interface TernakModel {
+  kode_hewan: string;
   jenis_hewan: JenisHewan;
   beratAwal: number;
   beratAkhir: number;
@@ -21,10 +21,10 @@ export interface KambingModel {
   userId?: string | null;
 }
 
-export interface KambingFormProps {
-  initialData?: KambingModel | null;
+export interface TernakFormProps {
+  initialData?: TernakModel | null;
   onSubmit: (
-    data: Kambing,
+    data: Ternak,
     file: File | null,
     isImageRemoved: boolean,
   ) => Promise<void>;

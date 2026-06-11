@@ -18,11 +18,11 @@ export const menuItems = [
   },
 
   {
-    title: "Kambing",
+    title: "Ternak",
     icon: Beef,
     children: [
-      { title: "Daftar Kambing", href: "/kambing", icon: List },
-      { title: "Tambah Kambing", href: "/kambing/create", icon: Plus },
+      { title: "Daftar Ternak", href: "/ternak", icon: List },
+      { title: "Tambah Ternak", href: "/ternak/create", icon: Plus },
     ],
     roles: ["ADMIN", "OPERATOR"],
   },

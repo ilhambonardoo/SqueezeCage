@@ -1,11 +1,11 @@
 "use client";
-import { useKambing } from "@/src/hooks/useKambing";
+import { useTernak } from "@/src/hooks/useTernak";
 import { useMounted } from "@/src/hooks/useMounted";
 
 const HeroSectionDashboard = () => {
   const mounted = useMounted();
 
-  const { stats, isLoading } = useKambing();
+  const { stats, isLoading } = useTernak();
 
   if (!mounted) return null;
   return (
@@ -35,7 +35,7 @@ const HeroSectionDashboard = () => {
                 <span className="text-2xl">🐐</span>
               </div>
               <p className="text-sm uppercase tracking-[0.2em] text-neutral-500 dark:text-neutral-400 font-bold">
-                Total Kambing
+                Total Ternak
               </p>
               {isLoading ? (
                 <div className="h-16 w-24 bg-neutral-200 dark:bg-neutral-800 animate-pulse rounded-2xl mt-2" />

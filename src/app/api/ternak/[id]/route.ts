@@ -1,10 +1,10 @@
 import { authOptions } from "@/auth";
-import { KambingValidation } from "@/src/lib/validation/kambing-validation";
+import { TernakValidation } from "@/src/lib/validation/ternak-validation";
 import {
-  deleteKambing,
-  getKambingById,
-  updateKambing,
-} from "@/src/services/kambing-services";
+  deleteTernak,
+  getTernakById,
+  updateTernak,
+} from "@/src/services/ternak-services";
 import { serverError } from "@/src/utils/api-helper";
 import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
@@ -37,7 +37,7 @@ export async function PATCH(
           ? undefined
           : formData.imageKey,
     };
-    const validation = KambingValidation.UPDATE.safeParse(payload);
+    const validation = TernakValidation.UPDATE.safeParse(payload);
 
     if (!validation.success) {
       return NextResponse.json(
@@ -49,7 +49,7 @@ export async function PATCH(
       );
     }
 
-    const res = await updateKambing(id, formData, oldImageKeyToDelete);
+    const res = await updateTernak(id, formData, oldImageKeyToDelete);
     if (res.status !== 200) {
       return NextResponse.json(
         { message: res.message },
@@ -58,7 +58,7 @@ export async function PATCH(
     }
 
     return NextResponse.json({
-      message: "Data kambing berhasil di update",
+      message: "Data ternak berhasil di update",
       status: 200,
     });
   } catch (error) {
@@ -72,7 +72,7 @@ export async function DELETE(
 ) {
   try {
     const { id } = await params;
-    const res = await deleteKambing(id);
+    const res = await deleteTernak(id);
     if (res.status !== 200) {
       return NextResponse.json(
         { message: res.message },
@@ -81,7 +81,7 @@ export async function DELETE(
     }
     return NextResponse.json({
       status: 201,
-      message: "Data kambing berhasil dihapus!",
+      message: "Data ternak berhasil dihapus!",
     });
   } catch (error) {
     return serverError(error);
@@ -100,7 +100,7 @@ export async function GET(
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
 
-    const res = await getKambingById(id);
+    const res = await getTernakById(id);
     return NextResponse.json(res.data, {
       status: 200,
     });

@@ -1,21 +1,23 @@
 "use client";
-import { useCallback, useEffect, useState } from "react";
-import { Kambing } from "../generated/prisma/client";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { Ternak } from "../generated/prisma/client";
 import toast from "react-hot-toast";
-import { StatsData } from "../interface/kambing";
-import { getKambingStats } from "../services/kambing-services";
+import { StatsData } from "../interface/ternak";
+import { getTernakStats } from "../services/ternak-services";
 
-export function useKambing() {
-  const [dataKambing, setDataKambing] = useState<Kambing[]>([]);
+export function useTernak() {
+  const [dataTernak, setDataTernak] = useState<Ternak[]>([]);
   const [isLoading, setIsloading] = useState(false);
   const [isLoadingStats, setIsLoadingStats] = useState(false);
   const [errors, setErrors] = useState("");
   const [stats, setStats] = useState<StatsData | null>(null);
 
-  const getDataKambing = useCallback(async () => {
+  const isFetched = useRef(false);
+
+  const getDataTernak = useCallback(async () => {
     try {
       setIsloading(true);
-      const res = await fetch("/api/kambing");
+      const res = await fetch("/api/ternak");
       const data = await res.json();
 
       if (!res.ok) {
@@ -23,7 +25,7 @@ export function useKambing() {
         return;
       }
 
-      setDataKambing(data);
+      setDataTernak(data);
     } catch {
       setErrors("Terjadi kesalahan pada jaringan!");
     } finally {
@@ -31,18 +33,19 @@ export function useKambing() {
     }
   }, []);
 
-  const getStatsKambing = useCallback(async () => {
+  const getStatsTernak = useCallback(async () => {
     try {
-      const res = await fetch("/api/kambing/stats", { method: "GET" });
+      setIsLoadingStats(true);
+      const res = await fetch("/api/ternak/stats", { method: "GET" });
       const data = await res.json();
 
       if (!res.ok) {
-        toast.error("Gagal memuat data kambing");
+        toast.error("Gagal memuat data ternak");
         return;
       }
 
       setStats(data);
-    } catch (error) {
+    } catch {
       toast.error("Terjadi kesalahan pada jaringan");
     } finally {
       setIsLoadingStats(false);
@@ -50,21 +53,27 @@ export function useKambing() {
   }, []);
 
   useEffect(() => {
-    getDataKambing();
-    getStatsKambing();
-  }, [getStatsKambing, getDataKambing]);
+    if (isFetched.current) return;
+    isFetched.current = true;
 
-  const deleteKambing = async (id: string) => {
-    const previousData = [...dataKambing];
+    const initData = async () => {
+      await Promise.all([getDataTernak(), getStatsTernak()]);
+    };
+
+    initData();
+  }, [getStatsTernak, getDataTernak]);
+
+  const deleteTernak = async (id: string) => {
+    const previousData = [...dataTernak];
     const previosStats = stats ? { ...stats } : null;
 
-    setDataKambing((prev) => prev.filter((kambing) => kambing.id !== id)); // set data kambing ke sebelumnya apa bila kambing id tidak sama dengan id yang dipilih
+    setDataTernak((prev) => prev.filter((ternak) => ternak.id !== id)); // set data ternak ke sebelumnya apa bila ternak id tidak sama dengan id yang dipilih
 
     try {
-      const res = await fetch(`/api/kambing/${id}`, { method: "DELETE" });
+      const res = await fetch(`/api/ternak/${id}`, { method: "DELETE" });
 
       if (!res.ok) {
-        setDataKambing(previousData);
+        setDataTernak(previousData);
         setStats(previosStats);
         const errorData = await res.json();
         toast.error(errorData.message || "Gagal menghapus data!");
@@ -73,23 +82,23 @@ export function useKambing() {
       toast.success("Berhasil menghapus data!");
       await new Promise((resolve) => setTimeout(resolve, 1000));
 
-      getKambingStats();
+      getTernakStats();
 
       return { success: true };
     } catch {
-      setDataKambing(previousData);
+      setDataTernak(previousData);
       toast.error("Terjadi kesalahan pada jaringan!");
       return { success: false };
     }
   };
 
   return {
-    dataKambing,
+    dataTernak,
     stats,
     isLoading: isLoading || isLoadingStats,
     errors,
-    getDataKambing,
-    getKambingStats,
-    deleteKambing,
+    getDataTernak,
+    getStatsTernak,
+    deleteTernak,
   };
 }

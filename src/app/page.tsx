@@ -1,5 +1,5 @@
 import HeroSectionLanding from "../components/LandingPage/HeroSectionLanding";
-import JenisKambing from "../components/LandingPage/JenisKambing";
+import JenisTernak from "../components/LandingPage/JenisTernak";
 import TentangLanding from "../components/LandingPage/TentangLanding";
 import NavbarLanding from "../components/Layouts/NavbarLanding";
 import Model3DSection from "../components/LandingPage/Model3DSection";
@@ -12,7 +12,7 @@ const page = () => {
       <main>
         <HeroSectionLanding />
         <TentangLanding />
-        <JenisKambing />
+        <JenisTernak />
         <DocumentationSection />
         <Model3DSection />
       </main>

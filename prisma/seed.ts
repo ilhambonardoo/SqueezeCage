@@ -28,7 +28,7 @@ async function main() {
 
   console.log("Admin user created or already exists");
 
-  const kambingData = Array.from({ length: 20 }).map((_, i) => {
+  const ternakData = Array.from({ length: 20 }).map((_, i) => {
     const isDomba = i % 3 === 0;
     const isBetina = i % 2 === 0;
     const beratAwal = Math.floor(Math.random() * 10) + 10;
@@ -38,7 +38,7 @@ async function main() {
       : `KBG-${String(i + 1).padStart(3, "0")}`;
 
     return {
-      kode_kambing: kode,
+      kode_hewan: kode,
       nama: `${isDomba ? "Domba" : "Kambing"} ${i + 1}`,
       beratAwal: beratAwal,
       beratAkhir: beratAkhir,
@@ -59,11 +59,11 @@ async function main() {
     };
   });
 
-  console.log("Seeding 20 kambing data...");
+  console.log("Seeding 20 ternak data...");
 
-  for (const item of kambingData) {
-    const kambing = await prisma.kambing.upsert({
-      where: { kode_kambing: item.kode_kambing },
+  for (const item of ternakData) {
+    const ternak = await prisma.ternak.upsert({
+      where: { kode_hewan: item.kode_hewan },
       update: item,
       create: item,
     });
@@ -72,12 +72,12 @@ async function main() {
       data: [
         {
           berat: item.beratAwal,
-          kambingId: kambing.id,
+          ternakId: ternak.id,
           tgl_cek: item.tgl_Masuk,
         },
         {
           berat: item.beratAkhir,
-          kambingId: kambing.id,
+          ternakId: ternak.id,
           tgl_cek: new Date(),
         },
       ],

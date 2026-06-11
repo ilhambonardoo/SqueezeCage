@@ -3,14 +3,14 @@ import { useMounted } from "@/src/hooks/useMounted";
 import { Edit, Plus, Trash, Eye } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { Kambing } from "@/src/generated/prisma/client";
-import { useKambing } from "@/src/hooks/useKambing";
+import { Ternak } from "@/src/generated/prisma/client";
+import { useTernak } from "@/src/hooks/useTernak";
 import { useSearchPagination } from "@/src/hooks/useSearchPagination";
 import SearchInput from "../utils/SearchInput";
 import Pagination from "../utils/Pagination";
 
-const DaftarKambing = () => {
-  const { dataKambing, isLoading, errors, deleteKambing } = useKambing();
+const DaftarTernak = () => {
+  const { dataTernak, isLoading, errors, deleteTernak } = useTernak();
   const {
     searchTerm,
     onSearchChange,
@@ -20,8 +20,8 @@ const DaftarKambing = () => {
     startIndex,
     setCurrentPage,
     filteredData,
-  } = useSearchPagination(dataKambing, 10, [
-    "kode_kambing",
+  } = useSearchPagination(dataTernak, 10, [
+    "kode_hewan",
     "nama",
     "jenis_hewan",
     "jenis_kelamin",
@@ -31,11 +31,11 @@ const DaftarKambing = () => {
 
   const handleDelete = async (id: string) => {
     if (confirm("Apakah anda yaking ingin menghapus data ini?"))
-      await deleteKambing(id);
+      await deleteTernak(id);
   };
 
   const handleUpdate = async (id: string) => {
-    router.push(`/kambing/edit/${id}`);
+    router.push(`/ternak/edit/${id}`);
   };
 
   const mounted = useMounted();
@@ -55,8 +55,8 @@ const DaftarKambing = () => {
         <div className="p-4 rounded-2xl bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 text-center max-w-md">
           <p className="font-bold mb-2">Terjadi Kesalahan</p>
           <p className="text-sm">
-            Gagal memuat data kambing. Silakan coba segarkan halaman atau
-            hubungi admin.
+            Gagal memuat data ternak. Silakan coba segarkan halaman atau hubungi
+            admin.
           </p>
         </div>
         <button
@@ -76,13 +76,11 @@ const DaftarKambing = () => {
           <div className="max-w-xl ml-5 mt-15">
             <h1 className="mb-4 text-4xl font-bold tracking-tight md:text-5xl font-plenty text-neutral-900 dark:text-white">
               Daftar{" "}
-              <span className="text-amber-700 dark:text-amber-600">
-                Kambing
-              </span>
+              <span className="text-amber-700 dark:text-amber-600">Ternak</span>
             </h1>
             <p className="text-lg text-neutral-600 dark:text-neutral-400">
               Kelola data ternak Anda dengan mudah. Tambah, edit, dan pantau
-              perkembangan kambing di satu tempat.
+              perkembangan Hewan di satu tempat.
             </p>
           </div>
         </div>
@@ -90,15 +88,15 @@ const DaftarKambing = () => {
           <SearchInput
             onChange={onSearchChange}
             value={searchTerm}
-            placeholder="Cari kambing...."
+            placeholder="Cari ternak...."
           />
 
           <button
-            onClick={() => router.push("/kambing/create")}
+            onClick={() => router.push("/ternak/create")}
             className="w-1/2 mt-10 mb-5 sm:w-auto flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2.5 rounded-xl transition-colors text-sm font-semibold cursor-pointer shadow-sm"
           >
             <Plus size={18} />
-            Tambah Kambing
+            Tambah Ternak
           </button>
         </div>
         <div className="mx-5 mb-10 overflow-hidden rounded-xl border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 shadow-sm dark:shadow-none">
@@ -136,13 +134,13 @@ const DaftarKambing = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200 dark:divide-neutral-800">
-                {currentItems.map((item: Kambing) => (
+                {currentItems.map((item: Ternak) => (
                   <tr
                     key={item.id}
                     className="hover:bg-gray-50 dark:hover:bg-neutral-800/50 transition-colors"
                   >
                     <td className="px-4 py-4 text-gray-600 dark:text-neutral-400 whitespace-nowrap">
-                      {item.kode_kambing}
+                      {item.kode_hewan}
                     </td>
 
                     <td className="px-4 py-4 font-semibold text-gray-900 dark:text-neutral-200 whitespace-nowrap">
@@ -190,7 +188,7 @@ const DaftarKambing = () => {
                     <td className="px-4 py-4 text-center whitespace-nowrap">
                       <div className="flex justify-center gap-2">
                         <button
-                          onClick={() => router.push(`/kambing/${item.id}`)}
+                          onClick={() => router.push(`/ternak/${item.id}`)}
                           className="p-2 text-emerald-600 hover:bg-emerald-50 dark:text-emerald-400 dark:hover:bg-emerald-900/20 rounded-lg transition-colors cursor-pointer"
                         >
                           <Eye size={18} />
@@ -228,4 +226,4 @@ const DaftarKambing = () => {
   );
 };
 
-export default DaftarKambing;
+export default DaftarTernak;

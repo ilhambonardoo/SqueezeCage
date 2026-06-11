@@ -5,10 +5,10 @@ import {
 } from "@/src/generated/prisma/client";
 import { z, type ZodType } from "zod";
 
-export class KambingValidation {
+export class TernakValidation {
   static readonly CREATE: ZodType = z.object({
     nama: z.string().min(1, "Nama wajib diisi"),
-    kode_kambing: z.string().min(1, "Kode kambing wajib diisi"),
+    kode_hewan: z.string().min(1, "Kode hewan wajib diisi"),
     jenis_hewan: z.nativeEnum(JenisHewan),
     beratAwal: z.number().nonnegative("Berat tidak boleh negatif"),
     beratAkhir: z.number().nonnegative("Berat tidak boleh negatif"),
@@ -29,7 +29,7 @@ export class KambingValidation {
 
   static readonly UPDATE: ZodType = z.object({
     nama: z.string().min(1, "Nama wajib diisi").optional(),
-    kode_kambing: z.string().min(1, "Kode kambing wajib diisi").optional(),
+    kode_hewan: z.string().min(1, "Kode hewan wajib diisi").optional(),
     jenis_hewan: z.nativeEnum(JenisHewan).optional(),
     beratAwal: z.number().nonnegative("Berat tidak boleh negatif").optional(),
     beratAkhir: z.number().nonnegative("Berat tidak boleh negatif").optional(),

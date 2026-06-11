@@ -17,8 +17,7 @@ const HeroSectionLanding = () => {
   const textRef = useRef<HTMLHeadingElement>(null);
   const imageWrapperRef = useRef(null);
 
-  const finalTitle =
-    "Penimbangan Berat Kambing Berbasis IoT & Machine Learning";
+  const finalTitle = "Penimbangan Berat Ternak Berbasis IoT & Machine Learning";
   const chars = "----------------------";
 
   useEffect(() => {

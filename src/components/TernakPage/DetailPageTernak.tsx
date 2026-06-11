@@ -17,23 +17,23 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState, useCallback } from "react";
 import toast from "react-hot-toast";
-import { Kambing } from "@/src/generated/prisma/client";
+import { Ternak } from "@/src/generated/prisma/client";
 
-interface DetailPageKambingProps {
+interface DetailPageTernakProps {
   id: string;
 }
 
-const DetailPageKambing = ({ id }: DetailPageKambingProps) => {
+const DetailPageTernak = ({ id }: DetailPageTernakProps) => {
   const [isLoading, setIsLoading] = useState(true);
-  const [data, setData] = useState<Kambing>();
+  const [data, setData] = useState<Ternak>();
   // State untuk mengontrol visibilitas overlay foto
   const [isPhotoOverlayOpen, setIsPhotoOverlayOpen] = useState(false);
 
   useEffect(() => {
-    const kambingById = async () => {
+    const fetchTernakData = async () => {
       setIsLoading(true);
       try {
-        const res = await fetch(`/api/kambing/${id}`, { method: "GET" });
+        const res = await fetch(`/api/ternak/${id}`, { method: "GET" });
         const result = await res.json();
 
         if (res.ok) {
@@ -48,7 +48,7 @@ const DetailPageKambing = ({ id }: DetailPageKambingProps) => {
       }
     };
 
-    if (id) kambingById();
+    if (id) fetchTernakData();
   }, [id]);
 
   // Fungsi untuk menutup overlay
@@ -99,7 +99,7 @@ const DetailPageKambing = ({ id }: DetailPageKambingProps) => {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
         <p className="text-neutral-400 font-medium tracking-wide">
-          Data kambing tidak ditemukan
+          Data ternak tidak ditemukan
         </p>
         <button
           onClick={() => router.back()}
@@ -132,7 +132,7 @@ const DetailPageKambing = ({ id }: DetailPageKambingProps) => {
         </button>
 
         <Link
-          href={`/kambing/edit/${id}`}
+          href={`/ternak/edit/${id}`}
           className="flex items-center gap-2 px-5 py-3 bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 rounded-2xl hover:opacity-90 transition-all font-semibold text-sm tracking-wide shadow-xl shadow-neutral-900/10 dark:shadow-none active:scale-95"
         >
           <Edit size={16} />
@@ -378,4 +378,4 @@ const DetailPageKambing = ({ id }: DetailPageKambingProps) => {
   );
 };
 
-export default DetailPageKambing;
+export default DetailPageTernak;

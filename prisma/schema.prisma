@@ -13,17 +13,18 @@ model User {
   email     String    @unique
   password  String
   role      Role      @default(OPERATOR)
-  image     String?   @db.Text
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   username  String    @unique
-  kambing   Kambing[]
+  image     String?
+  ternak   Ternak[]
 }
 
-model Kambing {
+model Ternak {
   id            String           @id @default(cuid())
   userId        String?
-  kode_kambing  String           @unique
+  kode_hewan    String           @unique
+  nama          String
   beratAwal     Float
   jenis_kelamin JenisKelamin?
   tgl_lahir     DateTime?
@@ -36,18 +37,17 @@ model Kambing {
   jenis_hewan   JenisHewan
   imageKey      String?
   imageUrl      String?
-  nama          String
-  user          User?             @relation(fields: [userId], references: [id], onDelete: SetNull)
+  user          User?            @relation(fields: [userId], references: [id])
   riwayatBerat  RiwayatBerat[]
 }
 
 model RiwayatBerat {
   id        String   @id @default(cuid())
   berat     Float
-  kambingId String
+  ternakId String
   tgl_cek   DateTime @default(now())
   createdAt DateTime @default(now())
-  kambing   Kambing  @relation(fields: [kambingId], references: [id], onDelete: Cascade)
+  ternak   Ternak  @relation(fields: [ternakId], references: [id], onDelete: Cascade)
 }
 
 enum Role {

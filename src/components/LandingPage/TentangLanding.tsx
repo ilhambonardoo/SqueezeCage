@@ -5,7 +5,7 @@ import { useMounted } from "@/src/hooks/useMounted";
 
 const TentangLanding = () => {
   const fullText =
-    "Di titik temu teknologi dan alam, hadir platform berbasis web untuk memahami dan merawat ternak kambing dengan cara baru. Didukung IoT dan Machine Learning, data berat tubuh berubah menjadi informasi real-time yang bermakna. Sistem ini membantu peternak mengambil keputusan lebih tepat—menghubungkan tradisi dengan inovasi, menuju peternakan yang cerdas dan berkelanjutan.";
+    "Di titik temu teknologi dan alam, hadir platform berbasis web untuk memahami dan merawat ternak dengan cara baru. Didukung IoT dan Machine Learning, data berat tubuh berubah menjadi informasi real-time yang bermakna. Sistem ini membantu peternak mengambil keputusan lebih tepat—menghubungkan tradisi dengan inovasi, menuju peternakan yang cerdas dan berkelanjutan.";
   const displayedText = useTypewriter(fullText, 30);
 
   const mounted = useMounted();
