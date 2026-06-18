@@ -30,7 +30,7 @@ const plentyFont = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "IoTernak",
+  title: "Squeeze Cage",
   description: "Platform Manajemen Hewan",
 };
 

@@ -1,6 +1,6 @@
-# IOTernak - Smart Livestock Monitoring System
+# squeeze cage - Smart Livestock Monitoring System
 
-IOTernak adalah platform manajemen peternakan digital yang dirancang untuk memantau data kesehatan dan pertumbuhan hewan ternak (Kambing & Domba) secara real-time. Sistem ini memungkinkan peternak untuk mencatat riwayat berat badan, status kehamilan, dan detail informasi ternak lainnya dengan efisien.
+squeeze cage adalah platform manajemen peternakan digital yang dirancang untuk memantau data kesehatan dan pertumbuhan hewan ternak (Kambing & Domba) secara real-time. Sistem ini memungkinkan peternak untuk mencatat riwayat berat badan, status kehamilan, dan detail informasi ternak lainnya dengan efisien.
 
 ---
 
@@ -110,4 +110,4 @@ Proyek ini memiliki 3 model utama:
 
 ---
 
-Dokumentasi ini dibuat untuk memudahkan pemahaman alur kerja dan struktur teknis proyek **IOTernak**.
+Dokumentasi ini dibuat untuk memudahkan pemahaman alur kerja dan struktur teknis proyek **squeeze cage**.

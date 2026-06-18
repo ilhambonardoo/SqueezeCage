@@ -38,7 +38,7 @@ const NavbarLanding = () => {
         <div className="flex justify-between items-center">
           <Link href="/" className="flex items-center space-x-2 group">
             <span className="text-xl font-bold bg-clip-text text-gray-900 bg-lienar-to-r from-amber-700 to-amber-600">
-              IoTernak
+              Squeeze Cage
             </span>
           </Link>
 
