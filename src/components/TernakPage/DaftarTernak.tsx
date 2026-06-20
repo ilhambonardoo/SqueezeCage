@@ -1,13 +1,13 @@
 "use client";
 import { useMounted } from "@/src/hooks/useMounted";
-import { Edit, Plus, Trash, Eye } from "lucide-react";
+import { Edit, Plus, Trash, Eye, HelpCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { Ternak } from "@/src/generated/prisma/client";
 import { useTernak } from "@/src/hooks/useTernak";
 import { useSearchPagination } from "@/src/hooks/useSearchPagination";
 import SearchInput from "../utils/SearchInput";
 import Pagination from "../utils/Pagination";
+import { TernakExtended } from "@/src/interface/ternak";
 
 const DaftarTernak = () => {
   const { dataTernak, isLoading, errors, deleteTernak } = useTernak();
@@ -125,8 +125,15 @@ const DaftarTernak = () => {
                   <th className="px-4 py-4 text-left font-semibold text-gray-900 dark:text-neutral-200 whitespace-nowrap">
                     Jenis Kelamin
                   </th>
+                  {/* ✨ KOLOM TERBARU & MODIFIKASI */}
                   <th className="px-4 py-4 text-left font-semibold text-gray-900 dark:text-neutral-200 whitespace-nowrap">
-                    Tgl Masuk
+                    Kandang
+                  </th>
+                  <th className="px-4 py-4 text-left font-semibold text-gray-900 dark:text-neutral-200 whitespace-nowrap">
+                    Sekat
+                  </th>
+                  <th className="px-4 py-4 text-left font-semibold text-gray-900 dark:text-neutral-200 whitespace-nowrap">
+                    Program Ternak
                   </th>
                   <th className="px-4 py-4 text-center font-semibold text-gray-900 dark:text-neutral-200 whitespace-nowrap">
                     Aksi
@@ -134,7 +141,7 @@ const DaftarTernak = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200 dark:divide-neutral-800">
-                {currentItems.map((item: Ternak) => (
+                {currentItems.map((item: TernakExtended) => (
                   <tr
                     key={item.id}
                     className="hover:bg-gray-50 dark:hover:bg-neutral-800/50 transition-colors"
@@ -161,7 +168,7 @@ const DaftarTernak = () => {
                         />
                       ) : (
                         <div className="w-10 h-10 rounded-lg bg-gray-200 dark:bg-neutral-800 flex items-center justify-center text-gray-400">
-                          <Plus size={16} />
+                          <HelpCircle size={16} />
                         </div>
                       )}
                     </td>
@@ -182,9 +189,44 @@ const DaftarTernak = () => {
                         {item.jenis_kelamin}
                       </span>
                     </td>
-                    <td className="px-4 py-4 text-gray-600 dark:text-neutral-400 whitespace-nowrap">
-                      {new Date(item.tgl_Masuk).toLocaleDateString("id-ID")}
+
+                    {/* ✨ DATA RE-MAPPING KANDANG */}
+                    <td className="px-4 py-4 text-gray-900 dark:text-neutral-200 font-medium whitespace-nowrap">
+                      {item.sekat?.kandang?.nama || (
+                        <span className="text-gray-400 dark:text-neutral-600 italic text-xs">
+                          Belum Diatur
+                        </span>
+                      )}
                     </td>
+
+                    {/* ✨ DATA SEKAT */}
+                    <td className="px-4 py-4 text-gray-600 dark:text-neutral-400 whitespace-nowrap">
+                      {item.sekat ? (
+                        <span className="px-2 py-0.5 rounded bg-gray-100 dark:bg-neutral-800 border border-gray-200 dark:border-neutral-700 font-mono text-xs">
+                          {item.sekat.kodeSekat} ({item.sekat.keteranganSekat})
+                        </span>
+                      ) : (
+                        <span className="text-gray-400 dark:text-neutral-600 italic text-xs">
+                          -
+                        </span>
+                      )}
+                    </td>
+
+                    {/* ✨ DATA PROGRAM TERNAK */}
+                    <td className="px-4 py-4 whitespace-nowrap">
+                      <span
+                        className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold ${
+                          item.programTernak === "FATTENING"
+                            ? "bg-amber-100 text-amber-900 dark:bg-amber-950/40 dark:text-amber-400 border border-amber-200 dark:border-amber-900"
+                            : "bg-purple-100 text-purple-900 dark:bg-purple-950/40 dark:text-purple-400 border border-purple-200 dark:border-purple-900"
+                        }`}
+                      >
+                        {item.programTernak === "FATTENING"
+                          ? "🥩 FATTENING"
+                          : "🧬 BREEDING"}
+                      </span>
+                    </td>
+
                     <td className="px-4 py-4 text-center whitespace-nowrap">
                       <div className="flex justify-center gap-2">
                         <button
