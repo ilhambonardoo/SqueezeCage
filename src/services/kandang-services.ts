@@ -1,3 +1,4 @@
+"use server";
 import { revalidatePath } from "next/cache";
 import { CreateKandangInput } from "../interface/kandang-sekat";
 import { prisma } from "../lib/prisma";
@@ -16,6 +17,20 @@ export async function getAllKandang() {
   });
 
   return { data, status: 200 };
+}
+
+export async function getAllKandangWithSekat() {
+  const session = await getServerSession(authOptions);
+  if (!session) {
+    return { status: 401, message: "Unauthorized" };
+  }
+
+  const data = await prisma.kandang.findMany({
+    include: {
+      sekatList: true,
+    },
+  });
+  return { status: 200, data };
 }
 
 export async function createKandang(input: CreateKandangInput) {
