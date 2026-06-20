@@ -9,13 +9,29 @@ const utapi = new UTApi();
 export async function getAllTernak() {
   const data = await prisma.ternak.findMany({
     orderBy: { createdAt: "desc" },
+    include: {
+      sekat: {
+        include: {
+          kandang: true,
+        },
+      },
+    },
   });
 
   return { status: 200, data };
 }
 
 export async function getTernakById(id: string) {
-  const data = await prisma.ternak.findUnique({ where: { id } });
+  const data = await prisma.ternak.findUnique({
+    where: { id },
+    include: {
+      sekat: {
+        include: {
+          kandang: true,
+        },
+      },
+    },
+  });
   return { status: 200, data, message: "Data berhasil ditemukan" };
 }
 
@@ -26,7 +42,9 @@ export async function deleteTernak(id: string) {
     return { status: 404, message: "Data tidak ditemukan" };
   }
 
-  const data = await prisma.ternak.delete({ where: { id } });
+  const data = await prisma.ternak.delete({
+    where: { id },
+  });
 
   if (existing.imageKey) {
     await utapi.deleteFiles(existing.imageKey);
@@ -46,6 +64,8 @@ const parseTernakData = (formData: TernakModel) => ({
   jenis_kelamin: formData.jenis_kelamin as "JANTAN" | "BETINA",
   statusHamil:
     formData.jenis_kelamin === "BETINA" ? formData.statusHamil : null,
+  sekatId: formData.sekatId || null,
+  programTernak: formData.programTernak ?? null,
   imageUrl: formData.imageUrl === null ? null : formData.imageUrl || null,
   imageKey: formData.imageKey === null ? null : formData.imageKey || null,
 });

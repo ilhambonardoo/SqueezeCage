@@ -9,6 +9,10 @@ import { TernakForm } from "@/src/components/TernakPage/TernakForm";
 import { TernakModel } from "@/src/interface/ternak";
 import { Ternak } from "@/src/generated/prisma/client";
 import { useUploadThing } from "@/src/hooks/useUploadthing";
+// Hooks useKandang dihapus/tidak dipakai jika data diambil via useEffect service
+import { getTernakById } from "@/src/services/ternak-services";
+import { getAllKandangWithSekat } from "@/src/services/kandang-services";
+import { KandangWithSekat } from "@/src/interface/kandang-sekat";
 
 interface EditTernakPageProps {
   id: string;
@@ -18,6 +22,7 @@ const EditTernakPage = ({ id }: EditTernakPageProps) => {
   const router = useRouter();
   const mounted = useMounted();
   const [initialData, setInitialData] = useState<TernakModel | null>(null);
+  const [kandangList, setKandangList] = useState<KandangWithSekat[]>([]);
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
 
@@ -30,10 +35,17 @@ const EditTernakPage = ({ id }: EditTernakPageProps) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await fetch(`/api/ternak/${id}`);
-        if (!res.ok) throw new Error("Gagal mengambil data");
-        const data = await res.json();
-        setInitialData(data);
+        const [ternakRes, kandangRes] = await Promise.all([
+          getTernakById(id),
+          getAllKandangWithSekat(),
+        ]);
+
+        if (ternakRes.status !== 200) throw new Error(ternakRes.message);
+        if (kandangRes.status !== 200)
+          throw new Error("Gagal memuat data kandang");
+
+        setInitialData(ternakRes.data);
+        setKandangList(kandangRes?.data || []);
       } catch {
         toast.error("Gagal mengambil data ternak");
         router.push("/ternak");
@@ -122,7 +134,7 @@ const EditTernakPage = ({ id }: EditTernakPageProps) => {
     <section className="relative z-10 flex flex-col gap-6 md:gap-10 p-5">
       <button
         onClick={() => router.back()}
-        className="text-neutral-500 cursor-pointer hover:text-amber-700 flex items-center gap-2"
+        className="text-neutral-500 cursor-pointer w-fit hover:text-amber-700 flex items-center gap-2"
       >
         <ArrowLeft size={20} /> Kembali
       </button>
@@ -136,6 +148,7 @@ const EditTernakPage = ({ id }: EditTernakPageProps) => {
         onSubmit={handleUpdate}
         isSubmitting={updating}
         submitLabel="Simpan Perubahan"
+        kandangList={kandangList}
       />
     </section>
   );

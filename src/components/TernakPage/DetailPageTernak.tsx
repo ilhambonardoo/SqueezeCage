@@ -6,18 +6,20 @@ import {
   Calendar,
   Scale,
   Info,
-  History,
   Edit,
   Heart,
   TrendingUp,
   X,
+  Home,
+  Grid,
+  Layers,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState, useCallback } from "react";
 import toast from "react-hot-toast";
-import { Ternak } from "@/src/generated/prisma/client";
+import { TernakWithRelasi } from "@/src/interface/ternak";
 
 interface DetailPageTernakProps {
   id: string;
@@ -25,8 +27,7 @@ interface DetailPageTernakProps {
 
 const DetailPageTernak = ({ id }: DetailPageTernakProps) => {
   const [isLoading, setIsLoading] = useState(true);
-  const [data, setData] = useState<Ternak>();
-  // State untuk mengontrol visibilitas overlay foto
+  const [data, setData] = useState<TernakWithRelasi | null>(null);
   const [isPhotoOverlayOpen, setIsPhotoOverlayOpen] = useState(false);
 
   useEffect(() => {
@@ -37,7 +38,8 @@ const DetailPageTernak = ({ id }: DetailPageTernakProps) => {
         const result = await res.json();
 
         if (res.ok) {
-          setData(result);
+          // Menyesuaikan jika response dibungkus objek { data: ... }
+          setData(result.data ? result.data : result);
         } else {
           toast.error("Gagal mengambil data!");
         }
@@ -51,12 +53,10 @@ const DetailPageTernak = ({ id }: DetailPageTernakProps) => {
     if (id) fetchTernakData();
   }, [id]);
 
-  // Fungsi untuk menutup overlay
   const closeOverlay = useCallback(() => {
     setIsPhotoOverlayOpen(false);
   }, []);
 
-  // Menambahkan listener untuk tombol Esc untuk menutup overlay
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
@@ -66,7 +66,6 @@ const DetailPageTernak = ({ id }: DetailPageTernakProps) => {
 
     if (isPhotoOverlayOpen) {
       window.addEventListener("keydown", handleKeyDown);
-      // Mencegah scrolling pada body saat overlay terbuka
       document.body.style.overflow = "hidden";
     } else {
       window.removeEventListener("keydown", handleKeyDown);
@@ -103,7 +102,7 @@ const DetailPageTernak = ({ id }: DetailPageTernakProps) => {
         </p>
         <button
           onClick={() => router.back()}
-          className="px-5 py-2.5 bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-800 dark:hover:bg-neutral-700 rounded-xl font-semibold text-sm transition-all"
+          className="px-5 cursor-pointer py-2.5 bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-800 dark:hover:bg-neutral-700 rounded-xl font-semibold text-sm transition-all"
         >
           Kembali
         </button>
@@ -112,7 +111,7 @@ const DetailPageTernak = ({ id }: DetailPageTernakProps) => {
   }
 
   const masaTernak = Math.floor(
-    (new Date().getTime() - new Date(data.tgl_Masuk).getTime()) /
+    (new Date().getTime() - new Date(data.tgl_masuk).getTime()) /
       (1000 * 60 * 60 * 24),
   );
   const kenaikanBerat = data.beratAkhir - data.beratAwal;
@@ -120,10 +119,10 @@ const DetailPageTernak = ({ id }: DetailPageTernakProps) => {
   return (
     <div className="max-w-6xl mx-auto w-full px-4 py-8 lg:py-12 selection:bg-amber-200">
       {/* Dynamic Floating Action Header */}
-      <div className="flex justify-between items-center mb-12">
+      <div className="flex justify-between items-center mb-10">
         <button
           onClick={() => router.back()}
-          className="group flex items-center justify-center w-12 h-12 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-2xl hover:border-neutral-400 dark:hover:border-neutral-600 transition-all duration-300 active:scale-95 shadow-sm"
+          className="group flex items-center cursor-pointer justify-center w-12 h-12 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-2xl hover:border-neutral-400 dark:hover:border-neutral-600 transition-all duration-300 active:scale-95 shadow-sm"
         >
           <ArrowLeft
             size={18}
@@ -146,10 +145,9 @@ const DetailPageTernak = ({ id }: DetailPageTernakProps) => {
         <div className="lg:col-span-5 space-y-6">
           <div
             className={`relative group rounded-[2.5rem] overflow-hidden bg-neutral-100 dark:bg-neutral-900 border border-neutral-200/60 dark:border-neutral-800/60 shadow-2xl shadow-neutral-200/40 dark:shadow-none ${data.imageUrl ? "cursor-zoom-in" : ""}`}
-            // Menampilkan overlay saat card diklik jika ada foto
             onClick={() => data.imageUrl && setIsPhotoOverlayOpen(true)}
           >
-            <div className="relative aspect-[4/5] w-full overflow-hidden">
+            <div className="relative aspect-4/5 w-full overflow-hidden">
               {data.imageUrl ? (
                 <Image
                   src={data.imageUrl}
@@ -159,7 +157,7 @@ const DetailPageTernak = ({ id }: DetailPageTernakProps) => {
                   className="object-cover transition-transform duration-1000 ease-out group-hover:scale-105"
                 />
               ) : (
-                <div className="flex flex-col items-center justify-center h-full text-neutral-400 gap-3 bg-gradient-to-b from-neutral-50 to-neutral-100 dark:from-neutral-900 dark:to-neutral-950">
+                <div className="flex flex-col items-center justify-center h-full text-neutral-400 gap-3 bg-linear-to-b from-neutral-50 to-neutral-100 dark:from-neutral-900 dark:to-neutral-950">
                   <div className="p-4 bg-white dark:bg-neutral-800 rounded-3xl shadow-sm">
                     <Info size={28} className="text-neutral-400" />
                   </div>
@@ -183,6 +181,11 @@ const DetailPageTernak = ({ id }: DetailPageTernakProps) => {
                 >
                   {data.jenis_kelamin}
                 </span>
+                {data.programTernak && (
+                  <span className="px-4 py-2 rounded-xl bg-amber-500/20 backdrop-blur-md text-[11px] font-bold text-amber-200 border border-amber-400/20 uppercase tracking-widest">
+                    {data.programTernak}
+                  </span>
+                )}
               </div>
             </div>
           </div>
@@ -206,24 +209,69 @@ const DetailPageTernak = ({ id }: DetailPageTernakProps) => {
         </div>
 
         {/* Right Column: Information Flow */}
-        <div className="lg:col-span-7 space-y-8 lg:pt-4">
+        <div className="lg:col-span-7 space-y-6 lg:pt-2">
           {/* Header Title Typography */}
           <div>
             <span className="text-xs font-bold uppercase tracking-widest text-amber-600 dark:text-amber-500">
-              ID Ternak: #{id.slice(-5)}
+              Kode Ternak: {data.kode_hewan || `#${id.slice(-5)}`}
             </span>
-            <h1 className="mt-2 text-4xl lg:text-5xl font-extrabold tracking-tight text-neutral-950 dark:text-white capitalize">
+            <h1 className="mt-1 text-4xl lg:text-5xl font-extrabold tracking-tight text-neutral-950 dark:text-white capitalize">
               {data.nama || "Tanpa Nama"}
             </h1>
           </div>
 
-          <hr className="border-neutral-200 dark:border-neutral-800" />
+          {/* 📌 LOKASI KANDANG & SEKAT CARD (NEW DESIGN) */}
+          <div className="p-6 bg-linear-to-br from-amber-50/60 to-orange-50/30 dark:from-neutral-900/40 dark:to-neutral-900/10 border border-amber-100/70 dark:border-neutral-800/80 rounded-3xl shadow-sm space-y-4">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-amber-800 dark:text-amber-500 flex items-center gap-2">
+              <Home size={16} /> Penempatan Tata Ruang
+            </h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="flex items-center gap-3.5 p-4 bg-white dark:bg-neutral-900 border border-neutral-200/60 dark:border-neutral-800/60 rounded-2xl">
+                <div className="w-10 h-10 bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 rounded-xl flex items-center justify-center shrink-0">
+                  <Layers size={20} />
+                </div>
+                <div>
+                  <p className="text-[11px] font-medium text-neutral-400 uppercase tracking-wide">
+                    Gedung / Kandang
+                  </p>
+                  <p className="text-sm font-bold text-neutral-800 dark:text-neutral-200">
+                    {data.sekat?.kandang?.nama || "Belum Ditempatkan"}
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-3.5 p-4 bg-white dark:bg-neutral-900 border border-neutral-200/60 dark:border-neutral-800/60 rounded-2xl">
+                <div className="w-10 h-10 bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400 rounded-xl flex items-center justify-center shrink-0">
+                  <Grid size={18} />
+                </div>
+                <div>
+                  <p className="text-[11px] font-medium text-neutral-400 uppercase tracking-wide">
+                    Nomor Petak Sekat
+                  </p>
+                  <p className="text-sm font-bold text-neutral-800 dark:text-neutral-200">
+                    {data.sekat?.kodeSekat ? (
+                      <span>
+                        {data.sekat.kodeSekat}{" "}
+                        {data.sekat.keteranganSekat && (
+                          <span className="text-xs font-normal text-neutral-400">
+                            ({data.sekat.keteranganSekat})
+                          </span>
+                        )}
+                      </span>
+                    ) : (
+                      "Belum Ada Sekat"
+                    )}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
 
           {/* Grid Stats Minimalist */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
             {/* Weight Card */}
-            <div className="p-6 bg-neutral-50 dark:bg-neutral-900/50 border border-neutral-200/50 dark:border-neutral-800/50 rounded-3xl transition-all hover:bg-neutral-100/50 dark:hover:bg-neutral-900">
-              <div className="flex items-center gap-3 mb-4 text-neutral-500">
+            <div className="p-6 bg-neutral-50 dark:bg-neutral-900/40 border border-neutral-200/50 dark:border-neutral-800/50 rounded-3xl transition-all hover:bg-neutral-100/50 dark:hover:bg-neutral-900/70">
+              <div className="flex items-center gap-3 mb-3 text-neutral-500">
                 <Scale size={18} />
                 <span className="text-xs font-bold uppercase tracking-wider">
                   Massa Tubuh
@@ -242,8 +290,8 @@ const DetailPageTernak = ({ id }: DetailPageTernakProps) => {
             </div>
 
             {/* Age Card */}
-            <div className="p-6 bg-neutral-50 dark:bg-neutral-900/50 border border-neutral-200/50 dark:border-neutral-800/50 rounded-3xl transition-all hover:bg-neutral-100/50 dark:hover:bg-neutral-900">
-              <div className="flex items-center gap-3 mb-4 text-neutral-500">
+            <div className="p-6 bg-neutral-50 dark:bg-neutral-900/40 border border-neutral-200/50 dark:border-neutral-800/50 rounded-3xl transition-all hover:bg-neutral-100/50 dark:hover:bg-neutral-900/70">
+              <div className="flex items-center gap-3 mb-3 text-neutral-500">
                 <Calendar size={18} />
                 <span className="text-xs font-bold uppercase tracking-wider">
                   Estimasi Umur
@@ -270,74 +318,57 @@ const DetailPageTernak = ({ id }: DetailPageTernakProps) => {
               </p>
             </div>
           </div>
+        </div>
+      </div>
 
-          {/* Progress Analytics Minimalist */}
-          <div className="p-6 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-3xl space-y-6">
-            <h3 className="text-sm font-bold uppercase tracking-wider text-neutral-400 flex items-center gap-2">
-              <TrendingUp size={16} /> Metrik Perkembangan
-            </h3>
+      {/* Progress Analytics Minimalist */}
+      <div className="p-6 mt-10 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-3xl space-y-6">
+        <h3 className="text-sm font-bold uppercase tracking-wider text-neutral-400 flex items-center gap-2">
+          <TrendingUp size={16} /> Metrik Perkembangan
+        </h3>
 
-            <div className="space-y-4">
-              {/* Progress 1: Masa Ternak */}
-              <div>
-                <div className="flex justify-between text-xs font-semibold mb-2">
-                  <span className="text-neutral-500">Durasi Pemeliharaan</span>
-                  <span className="text-neutral-900 dark:text-white font-bold">
-                    {masaTernak} Hari
-                  </span>
-                </div>
-                <div className="w-full h-2 bg-neutral-100 dark:bg-neutral-800 rounded-full overflow-hidden">
-                  <div
-                    className="h-full bg-amber-600 rounded-full"
-                    style={{ width: `${Math.min(masaTernak / 3.65, 100)}%` }}
-                  ></div>
-                </div>
-                <p className="text-[11px] text-neutral-400 mt-1 italic">
-                  Masuk pada{" "}
-                  {new Date(data.tgl_Masuk).toLocaleDateString("id-ID", {
-                    day: "numeric",
-                    month: "long",
-                    year: "numeric",
-                  })}
-                </p>
-              </div>
-
-              {/* Progress 2: Kenaikan Berat */}
-              <div>
-                <div className="flex justify-between text-xs font-semibold mb-2">
-                  <span className="text-neutral-500">Tren Pertumbuhan</span>
-                  <span
-                    className={`font-bold ${kenaikanBerat >= 0 ? "text-emerald-600" : "text-rose-600"}`}
-                  >
-                    {kenaikanBerat >= 0 ? `+${kenaikanBerat}` : kenaikanBerat}{" "}
-                    kg
-                  </span>
-                </div>
-                <div className="w-full h-2 bg-neutral-100 dark:bg-neutral-800 rounded-full overflow-hidden">
-                  <div
-                    className={`h-full rounded-full ${kenaikanBerat >= 0 ? "bg-emerald-500" : "bg-rose-500"}`}
-                    style={{
-                      width: `${Math.min(Math.abs(kenaikanBerat) * 4, 100)}%`,
-                    }}
-                  ></div>
-                </div>
-              </div>
+        <div className="space-y-4">
+          {/* Progress 1: Masa Ternak */}
+          <div>
+            <div className="flex justify-between text-xs font-semibold mb-2">
+              <span className="text-neutral-500">Durasi Pemeliharaan</span>
+              <span className="text-neutral-900 dark:text-white font-bold">
+                {masaTernak} Hari
+              </span>
             </div>
+            <div className="w-full h-2 bg-neutral-100 dark:bg-neutral-800 rounded-full overflow-hidden">
+              <div
+                className="h-full bg-amber-600 rounded-full"
+                style={{ width: `${Math.min(masaTernak / 3.65, 100)}%` }}
+              ></div>
+            </div>
+            <p className="text-[11px] text-neutral-400 mt-1 italic">
+              Masuk pada{" "}
+              {new Date(data.tgl_masuk).toLocaleDateString("id-ID", {
+                day: "numeric",
+                month: "long",
+                year: "numeric",
+              })}
+            </p>
           </div>
 
-          {/* Activity Logs Section */}
-          <div className="pt-2">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-md font-bold tracking-tight flex items-center gap-2 text-neutral-800 dark:text-neutral-200">
-                <History size={16} className="text-neutral-400" />
-                Catatan Aktivitas Belakangan
-              </h2>
+          {/* Progress 2: Kenaikan Berat */}
+          <div>
+            <div className="flex justify-between text-xs font-semibold mb-2">
+              <span className="text-neutral-500">Tren Pertumbuhan</span>
+              <span
+                className={`font-bold ${kenaikanBerat >= 0 ? "text-emerald-600" : "text-rose-600"}`}
+              >
+                {kenaikanBerat >= 0 ? `+${kenaikanBerat}` : kenaikanBerat} kg
+              </span>
             </div>
-            <div className="p-5 bg-neutral-50 dark:bg-neutral-900/30 rounded-2xl border border-dashed border-neutral-200 dark:border-neutral-800 text-center">
-              <p className="text-xs italic text-neutral-400">
-                Belum ada log penimbangan atau riwayat medis tambahan yang
-                direkam untuk hewan ini.
-              </p>
+            <div className="w-full h-2 bg-neutral-100 dark:bg-neutral-800 rounded-full overflow-hidden">
+              <div
+                className={`h-full rounded-full ${kenaikanBerat >= 0 ? "bg-emerald-500" : "bg-rose-500"}`}
+                style={{
+                  width: `${Math.min(Math.abs(kenaikanBerat) * 4, 100)}%`,
+                }}
+              ></div>
             </div>
           </div>
         </div>
@@ -345,30 +376,24 @@ const DetailPageTernak = ({ id }: DetailPageTernakProps) => {
 
       {/* Photo Overlay (Lightbox) */}
       {isPhotoOverlayOpen && data.imageUrl && (
-        // Overlay Latar Belakang (Gelap Transparan)
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-sm cursor-zoom-out animate-fade-in"
-          // Menutup overlay jika latar belakang diklik
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-sm cursor-zoom-out"
           onClick={closeOverlay}
         >
-          {/* Tombol Tutup (Pojok Kanan Atas) */}
           <button
-            className="absolute top-6 right-6 p-2 rounded-full bg-neutral-800/50 text-white hover:bg-neutral-700/50 transition-colors"
+            className="absolute top-6  cursor-pointer right-6 p-2 rounded-full bg-neutral-800/50 text-white hover:bg-neutral-700/50 transition-colors"
             onClick={closeOverlay}
           >
             <X size={24} />
           </button>
 
-          {/* Kontainer Foto (Agar foto tidak terlalu besar dan responsif) */}
           <div className="relative w-full h-full max-w-7xl max-h-[90vh] flex items-center justify-center">
-            {/* Foto Ukuran Penuh */}
             <Image
               src={data.imageUrl}
               alt={data.nama}
-              width={1600} // Lebar maksimum foto
-              height={1600} // Tinggi maksimum foto
-              className="max-w-full max-h-full object-contain rounded-2xl shadow-2xl animate-scale-in"
-              // Mencegah klik pada foto menutup overlay
+              width={1600}
+              height={1600}
+              className="max-w-full max-h-full object-contain rounded-2xl shadow-2xl"
               onClick={(e) => e.stopPropagation()}
             />
           </div>
