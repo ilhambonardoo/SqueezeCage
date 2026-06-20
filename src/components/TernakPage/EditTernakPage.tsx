@@ -134,7 +134,7 @@ const EditTernakPage = ({ id }: EditTernakPageProps) => {
     <section className="relative z-10 flex flex-col gap-6 md:gap-10 p-5">
       <button
         onClick={() => router.back()}
-        className="text-neutral-500 cursor-pointer hover:text-amber-700 flex items-center gap-2"
+        className="text-neutral-500 cursor-pointer w-fit hover:text-amber-700 flex items-center gap-2"
       >
         <ArrowLeft size={20} /> Kembali
       </button>
