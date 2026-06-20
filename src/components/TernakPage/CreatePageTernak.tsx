@@ -8,11 +8,14 @@ import toast from "react-hot-toast";
 import { TernakForm } from "@/src/components/TernakPage/TernakForm";
 import { Ternak } from "@/src/generated/prisma/client";
 import { useUploadThing } from "@/src/hooks/useUploadthing";
+import { useKandang } from "@/src/hooks/useKandang";
 
 const CreatePageTernak = () => {
   const router = useRouter();
   const mounted = useMounted();
   const [loading, setLoading] = useState(false);
+
+  const { dataKandang } = useKandang();
 
   const { startUpload } = useUploadThing("imageUploader", {
     onUploadError: (error: Error) => {
@@ -88,6 +91,7 @@ const CreatePageTernak = () => {
         onSubmit={handleCreateSubmit}
         isSubmitting={loading}
         submitLabel="Tambah Ternak Baru"
+        kandangList={dataKandang}
       />
     </section>
   );
