@@ -1,0 +1,43 @@
+import { getSekatList } from "@/src/services/sekat-services";
+import { createSekat } from "@/src/services/sekat-services";
+import { serverError } from "@/src/utils/api-helper";
+import { NextResponse } from "next/server";
+
+export async function GET() {
+  try {
+    const res = await getSekatList();
+
+    if (res.status !== 200) {
+      return NextResponse.json(
+        { message: res.message },
+        { status: res.status },
+      );
+    }
+
+    if (!res.data || res.data.length === 0) {
+      return NextResponse.json([], { status: 200 });
+    }
+
+    return NextResponse.json(res.data, { status: 200 });
+  } catch (error) {
+    serverError(error);
+  }
+}
+
+export async function POST(request: Request) {
+  try {
+    const body = await request.json();
+    const res = await createSekat(body);
+
+    if (res.status !== 201) {
+      return NextResponse.json(
+        { message: res.message },
+        { status: res.status },
+      );
+    }
+
+    return NextResponse.json(res.data, { status: 201 });
+  } catch (error) {
+    serverError(error);
+  }
+}

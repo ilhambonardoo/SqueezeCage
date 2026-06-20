@@ -17,7 +17,7 @@ model User {
   updatedAt DateTime  @updatedAt
   username  String    @unique
   image     String?
-  ternak   Ternak[]
+  ternakList  Ternak[]
 }
 
 model Ternak {
@@ -28,17 +28,43 @@ model Ternak {
   beratAwal     Float
   jenis_kelamin JenisKelamin?
   tgl_lahir     DateTime?
-  tgl_Masuk     DateTime         @default(now())
+  tgl_masuk     DateTime         @default(now())
   createdAt     DateTime         @default(now())
   updatedAt     DateTime         @updatedAt
   beratAkhir    Float
   statusHamil   StatusKehamilan?
   umur          Int
   jenis_hewan   JenisHewan
+  sekatId       String?
+  sekat         Sekat?      @relation(fields: [sekatId], references: [id], onDelete: SetNull)
+  programTernak ProgramTernak?
   imageKey      String?
   imageUrl      String?
   user          User?            @relation(fields: [userId], references: [id])
   riwayatBerat  RiwayatBerat[]
+}
+
+model Sekat {
+  id          String    @id @default(cuid())
+  kodeSekat   String    @unique
+  keteranganSekat KeteranganSekat @default(INDIVIDU)
+
+  kandangId   String
+  kandang     Kandang   @relation(fields: [kandangId], references: [id], onDelete: Cascade)
+
+  ternakList Ternak[]
+
+  createdAt   DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+}
+
+
+model Kandang {
+  id        String    @id @default(cuid())
+  nama      String    @unique
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  sekatList Sekat[]
 }
 
 model RiwayatBerat {
@@ -49,6 +75,7 @@ model RiwayatBerat {
   createdAt DateTime @default(now())
   ternak   Ternak  @relation(fields: [ternakId], references: [id], onDelete: Cascade)
 }
+
 
 enum Role {
   ADMIN
@@ -68,4 +95,14 @@ enum StatusKehamilan {
 enum JenisHewan {
   DOMBA
   KAMBING
+}
+
+enum ProgramTernak {
+  FATTENING
+  BREEDING
+}
+
+enum KeteranganSekat {
+  INDIVIDU
+  KOLONI
 }

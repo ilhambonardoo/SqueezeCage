@@ -8,6 +8,7 @@ import {
   LucideScale3D,
   Wheat,
   History,
+  Warehouse,
 } from "lucide-react";
 
 import { IoScaleSharp, IoTrendingUp } from "react-icons/io5";
@@ -26,6 +27,11 @@ export const menuItems = [
     children: [
       { title: "Daftar Ternak", href: "/ternak", icon: List },
       { title: "Tambah Ternak", href: "/ternak/create", icon: Plus },
+      {
+        title: "Tambah Kandang dan Sekat",
+        href: "/kandang-sekat",
+        icon: Warehouse,
+      },
     ],
     roles: ["ADMIN", "OPERATOR"],
   },
