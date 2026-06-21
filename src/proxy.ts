@@ -16,6 +16,10 @@ export async function proxy(req: NextRequest) {
     "/ternak",
     "/timbangan",
     "/users",
+    "/kandang-sekat",
+    "/prediksi-bobot",
+    "/prediksi-pakan",
+    "/riwayat",
   ];
 
   const isProtectedPage = onlySignIn.some((path) => pathname.startsWith(path));
@@ -50,5 +54,9 @@ export const config = {
     "/register",
     "/ternak/:path*",
     "/timbangan:path*",
+    "/kandang-sekat",
+    "/prediksi-bobot",
+    "/prediksi-pakan",
+    "/riwayat",
   ],
 };
