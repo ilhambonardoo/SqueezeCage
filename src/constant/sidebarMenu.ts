@@ -51,13 +51,6 @@ export const menuItems = [
   },
 
   {
-    title: "Riwayat Kandang",
-    href: "/riwayat",
-    icon: History,
-    roles: ["ADMIN", "OPERATOR"],
-  },
-
-  {
     title: "Timbangan",
     href: "/timbangan",
     icon: IoScaleSharp,
