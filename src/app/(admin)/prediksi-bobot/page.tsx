@@ -1,5 +1,11 @@
+import PrediksiBobotPage from "@/src/components/PrediksiBobotPage/FormPrediksiBobot";
+
 const page = () => {
-  return <div>page</div>;
+  return (
+    <>
+      <PrediksiBobotPage />
+    </>
+  );
 };
 
 export default page;
