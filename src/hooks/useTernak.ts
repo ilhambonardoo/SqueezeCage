@@ -80,8 +80,6 @@ export function useTernak() {
         return { success: false };
       }
       toast.success("Berhasil menghapus data!");
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-
       getTernakStats();
 
       return { success: true };

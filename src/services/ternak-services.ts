@@ -1,12 +1,21 @@
 "use server";
+import { authOptions } from "@/auth";
 import { TernakModel } from "@/src/interface/ternak";
 import { prisma } from "@/src/lib/prisma";
+import { getServerSession } from "next-auth";
 import { revalidatePath } from "next/cache";
 import { UTApi } from "uploadthing/server";
+import { TernakValidation } from "../lib/validation/ternak-validation";
 
 const utapi = new UTApi();
 
 export async function getAllTernak() {
+  const session = await getServerSession(authOptions);
+
+  if (!session) {
+    return { message: "Unatuhotized", status: 401 };
+  }
+
   const data = await prisma.ternak.findMany({
     orderBy: { createdAt: "desc" },
     include: {
@@ -22,6 +31,12 @@ export async function getAllTernak() {
 }
 
 export async function getTernakById(id: string) {
+  const session = await getServerSession(authOptions);
+
+  if (!session) {
+    return { message: "Unatuhotized", status: 401 };
+  }
+
   const data = await prisma.ternak.findUnique({
     where: { id },
     include: {
@@ -36,6 +51,12 @@ export async function getTernakById(id: string) {
 }
 
 export async function deleteTernak(id: string) {
+  const session = await getServerSession(authOptions);
+
+  if (!session) {
+    return { message: "Unatuhotized", status: 401 };
+  }
+
   const existing = await prisma.ternak.findUnique({ where: { id } });
 
   if (!existing) {
@@ -73,6 +94,18 @@ const parseTernakData = (formData: TernakModel) => ({
 });
 
 export async function createTernak(formData: TernakModel) {
+  const session = await getServerSession(authOptions);
+
+  if (!session) {
+    return { message: "Unatuhotized", status: 401 };
+  }
+
+  const validation = TernakValidation.CREATE.safeParse(formData);
+
+  if (!validation.success) {
+    return { status: 400, message: validation.error.issues[0].message };
+  }
+
   const { kode_hewan, userId } = formData;
 
   if (!userId) return { status: 400, message: "User ID Wajib ada" };
@@ -109,8 +142,17 @@ export async function updateTernak(
   formData: TernakModel,
   oldImageKeyToDelete?: string | null,
 ) {
-  if (!id) {
-    return { status: 400, message: "Kode hewan diperlukan!" };
+  const session = await getServerSession(authOptions);
+
+  if (!session) {
+    return { message: "Unatuhotized", status: 401 };
+  }
+
+  const validation = TernakValidation.UPDATE.safeParse(formData);
+
+  if (!validation.success) {
+    console.error("Validation errors: ", validation.error.issues);
+    return { status: 400, message: validation.error.issues[0].message };
   }
 
   const existingTernak = await prisma.ternak.findUnique({
@@ -146,6 +188,12 @@ export async function updateTernak(
 }
 
 export async function deleteImage(key: string) {
+  const session = await getServerSession(authOptions);
+
+  if (!session) {
+    return { message: "Unatuhotized", status: 401 };
+  }
+
   if (!key) return;
 
   await utapi.deleteFiles(key);
@@ -154,6 +202,12 @@ export async function deleteImage(key: string) {
 }
 
 export async function getTernakStats() {
+  const session = await getServerSession(authOptions);
+
+  if (!session) {
+    return { message: "Unatuhotized", status: 401 };
+  }
+
   const [totalTernak, perKelamin, perJenis] = await Promise.all([
     prisma.ternak.count(),
     prisma.ternak.groupBy({
@@ -181,7 +235,7 @@ export async function getTernakStats() {
   };
 
   return {
-    status: 201,
+    status: 200,
     message: "Statistik berhasi dimuat",
     data: formattedData,
   };

@@ -1,24 +1,14 @@
 import { serverError } from "@/src/utils/api-helper";
-import { TernakValidation } from "@/src/lib/validation/ternak-validation";
 import { createTernak, getAllTernak } from "@/src/services/ternak-services";
-import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
-import { authOptions } from "@/auth";
 
 export async function POST(request: Request) {
   try {
-    const session = await getServerSession(authOptions);
-
-    if (!session) {
-      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
-    }
-
     const body = await request.json();
     const { ...formData } = body;
 
     const payload = {
       ...body,
-      userId: session.user.id,
       imageUrl:
         formData.imageUrl === null || formData.imageUrl === ""
           ? undefined
@@ -28,19 +18,9 @@ export async function POST(request: Request) {
           ? undefined
           : formData.imageKey,
     };
-    const validation = TernakValidation.CREATE.safeParse(payload);
-
-    if (!validation.success) {
-      return NextResponse.json(
-        {
-          message: "Validation Failed!",
-          errors: validation.error.flatten().fieldErrors,
-        },
-        { status: 400 },
-      );
-    }
 
     const res = await createTernak(payload);
+
     if (res.status !== 201) {
       return NextResponse.json(
         {
@@ -62,15 +42,17 @@ export async function POST(request: Request) {
 
 export async function GET() {
   try {
-    const session = await getServerSession(authOptions);
+    const res = await getAllTernak();
 
-    if (!session) {
-      return NextResponse.json({ message: "Unatuhotized" }, { status: 401 });
+    if (res.status !== 200) {
+      return NextResponse.json(
+        { message: res.message },
+        { status: res.status },
+      );
     }
 
-    const res = await getAllTernak();
     return NextResponse.json(res.data, {
-      status: 201,
+      status: 200,
     });
   } catch (error) {
     return serverError(error);

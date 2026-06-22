@@ -1,26 +1,17 @@
-import { authOptions } from "@/auth";
 import { getTernakStats } from "@/src/services/ternak-services";
 import { serverError } from "@/src/utils/api-helper";
-import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
 
 export async function GET() {
   try {
-    const session = await getServerSession(authOptions);
-    if (!session) {
+    const res = await getTernakStats();
+    if (res.status !== 200) {
       return NextResponse.json(
-        {
-          message: "Unauthorized",
-        },
-        {
-          status: 401,
-        },
+        { message: res.message },
+        { status: res.status },
       );
     }
-
-    const res = await getTernakStats();
-
-    return NextResponse.json(res.data, { status: res.status });
+    return NextResponse.json(res.data, { status: 200 });
   } catch (error) {
     serverError(error);
   }

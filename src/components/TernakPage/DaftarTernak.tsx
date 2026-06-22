@@ -8,8 +8,21 @@ import { useSearchPagination } from "@/src/hooks/useSearchPagination";
 import SearchInput from "../utils/SearchInput";
 import Pagination from "../utils/Pagination";
 import { TernakWithRelasi } from "@/src/interface/ternak";
+import ConfirmDeleteDialog from "../utils/ConfirmDeleteDialog";
+import { useState } from "react";
+import toast from "react-hot-toast";
 
 const DaftarTernak = () => {
+  const [deleteModal, setDeleteModal] = useState<{
+    open: boolean;
+    id: string;
+    name: string;
+  }>({
+    open: false,
+    id: "",
+    name: "",
+  });
+
   const { dataTernak, isLoading, errors, deleteTernak } = useTernak();
   const {
     searchTerm,
@@ -29,9 +42,14 @@ const DaftarTernak = () => {
 
   const router = useRouter();
 
-  const handleDelete = async (id: string) => {
-    if (confirm("Apakah anda yaking ingin menghapus data ini?"))
-      await deleteTernak(id);
+  const handleConfirmDelete = async () => {
+    const success = await deleteTernak(deleteModal.id);
+
+    if (success) {
+      setDeleteModal((prev) => ({ ...prev, open: false }));
+    } else {
+      toast.error(`Gagal menghapus data ${deleteModal.name}`);
+    }
   };
 
   const handleUpdate = async (id: string) => {
@@ -243,7 +261,13 @@ const DaftarTernak = () => {
                         </button>
                         <button
                           className="p-2 text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20 rounded-lg transition-colors cursor-pointer"
-                          onClick={() => handleDelete(item.id)}
+                          onClick={() =>
+                            setDeleteModal({
+                              open: true,
+                              id: item.id,
+                              name: item.nama,
+                            })
+                          }
                         >
                           <Trash size={18} />
                         </button>
@@ -262,6 +286,15 @@ const DaftarTernak = () => {
           onPageChange={setCurrentPage}
           totalData={filteredData.length}
           totalPages={totalPages}
+        />
+
+        <ConfirmDeleteDialog
+          open={deleteModal.open}
+          title={"Hapus daftar hewan ternak?"}
+          description={"Apakah anda yakin ingin menghapus hewan ternak ini?"}
+          itemName={deleteModal.name}
+          onClose={() => setDeleteModal((prev) => ({ ...prev, open: false }))}
+          onConfirm={handleConfirmDelete}
         />
       </section>
     </>
