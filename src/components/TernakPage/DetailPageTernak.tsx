@@ -137,7 +137,7 @@ const DetailPageTernak = ({ id }: DetailPageTernakProps) => {
         >
           <ArrowLeft
             size={18}
-            className="group-hover:-translate-x-0.5 transition-transform"
+            className="group-hover:-translate-x-0.5 text-black dark:text-white transition-transform"
           />
         </button>
 
@@ -185,14 +185,14 @@ const DetailPageTernak = ({ id }: DetailPageTernakProps) => {
                 <span
                   className={`px-4 py-2 rounded-xl backdrop-blur-md text-[11px] font-bold uppercase tracking-widest border ${
                     data.jenis_kelamin === "JANTAN"
-                      ? "bg-blue-500/20 text-blue-200 border-blue-400/20"
-                      : "bg-pink-500/20 text-pink-200 border-pink-400/20"
+                      ? "dark:bg-blue-500/20 bg-blue-500 dark:text-blue-200 text-neutral-50 border-blue-400/20"
+                      : "dark:bg-pink-500/20 bg-pink-500 dark:text-pink-200 text-neutral-50 border-pink-400/20"
                   }`}
                 >
                   {data.jenis_kelamin}
                 </span>
                 {data.programTernak && (
-                  <span className="px-4 py-2 rounded-xl bg-amber-500/20 backdrop-blur-md text-[11px] font-bold text-amber-200 border border-amber-400/20 uppercase tracking-widest">
+                  <span className="px-4 py-2 rounded-xl dark:bg-amber-500/20 bg-amber-500 backdrop-blur-md text-[11px] font-bold dark:text-amber-200 text-white border border-amber-400/20 uppercase tracking-widest">
                     {data.programTernak}
                   </span>
                 )}
@@ -338,15 +338,15 @@ const DetailPageTernak = ({ id }: DetailPageTernakProps) => {
       {dataBobot && !isLoading && (
         <div className="mt-10 grid grid-cols-1 md:grid-cols-3 gap-6 animate-fadeIn">
           {/* Proyeksi Bulan Depan */}
-          <div className="p-6 bg-neutral-900 border border-neutral-800 rounded-3xl flex flex-col justify-between text-white">
+          <div className="p-6 dark:bg-neutral-900 bg-white border dark:border-neutral-800 rounded-3xl flex flex-col justify-between text-white">
             <div>
               <span className="text-xs font-bold uppercase tracking-wider text-amber-400 flex items-center gap-1">
-                <BrainCircuit size={14} /> Prediksi AI Bulan Depan
+                Prediksi AI Bulan Depan
               </span>
               <p className="text-xs text-neutral-400 mt-2">
                 Perkiraan bobot hewan ini bulan depan akan mencapai:
               </p>
-              <p className="text-4xl font-black text-white mt-1">
+              <p className="text-4xl font-black dark:text-white text-neutral-600 mt-1">
                 {dataBobot.prediksi.bobotBulanDepan}{" "}
                 <span className="text-base font-normal text-neutral-400">
                   Kg
@@ -360,8 +360,8 @@ const DetailPageTernak = ({ id }: DetailPageTernakProps) => {
               <span
                 className={`text-xs font-bold inline-block mt-1 px-2.5 py-1 rounded-lg ${
                   dataBobot.prediksi.klasifikasi === "Ideal"
-                    ? "bg-emerald-950/50 text-emerald-400 border border-emerald-900/40"
-                    : "bg-red-950/50 text-red-400 border border-red-900/40"
+                    ? "dark:bg-emerald-950/50 text-emerald-500 border border-emerald-900/40"
+                    : "dark:bg-red-950/50 text-red-400 border border-red-900/40"
                 }`}
               >
                 {dataBobot.prediksi.klasifikasi}
