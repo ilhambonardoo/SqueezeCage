@@ -3,6 +3,7 @@ import {
   JenisKelamin,
   ProgramTernak,
   StatusKehamilan,
+  StatusMenyusui,
 } from "@/src/generated/prisma/client";
 import { z } from "zod";
 
@@ -22,6 +23,10 @@ export class TernakValidation {
       .optional(),
     programTernak: z
       .enum(Object.values(ProgramTernak) as [string, ...string[]])
+      .optional()
+      .nullable(),
+    statusMenyusui: z
+      .enum(Object.values(StatusMenyusui) as [string, ...string[]])
       .optional()
       .nullable(),
     tgl_masuk: z.coerce.date().optional(),
