@@ -8,11 +8,12 @@ import {
   Info,
   Edit,
   Heart,
-  TrendingUp,
   X,
   Home,
   Grid,
   Layers,
+  AlertTriangle,
+  BrainCircuit,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
@@ -20,25 +21,35 @@ import Link from "next/link";
 import { useEffect, useState, useCallback } from "react";
 import toast from "react-hot-toast";
 import { TernakWithRelasi } from "@/src/interface/ternak";
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+} from "recharts";
+import { useMachine } from "@/src/hooks/useMachine";
 
 interface DetailPageTernakProps {
   id: string;
 }
 
 const DetailPageTernak = ({ id }: DetailPageTernakProps) => {
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoadingTernak, setIsLoadingTernak] = useState(true);
   const [data, setData] = useState<TernakWithRelasi | null>(null);
   const [isPhotoOverlayOpen, setIsPhotoOverlayOpen] = useState(false);
+  const { dataBobot, isLoading, getDataBobot } = useMachine();
 
   useEffect(() => {
     const fetchTernakData = async () => {
-      setIsLoading(true);
+      setIsLoadingTernak(true);
       try {
         const res = await fetch(`/api/ternak/${id}`, { method: "GET" });
         const result = await res.json();
 
         if (res.ok) {
-          // Menyesuaikan jika response dibungkus objek { data: ... }
           setData(result.data ? result.data : result);
         } else {
           toast.error("Gagal mengambil data!");
@@ -46,12 +57,18 @@ const DetailPageTernak = ({ id }: DetailPageTernakProps) => {
       } catch {
         toast.error("Terjadi kesalahan jaringan!");
       } finally {
-        setIsLoading(false);
+        setIsLoadingTernak(false);
       }
     };
 
     if (id) fetchTernakData();
   }, [id]);
+
+  useEffect(() => {
+    if (id) {
+      getDataBobot(id);
+    }
+  }, [id, getDataBobot]);
 
   const closeOverlay = useCallback(() => {
     setIsPhotoOverlayOpen(false);
@@ -83,7 +100,7 @@ const DetailPageTernak = ({ id }: DetailPageTernakProps) => {
 
   if (!mounted) return null;
 
-  if (isLoading) {
+  if (isLoadingTernak) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="relative w-16 h-16">
@@ -110,12 +127,6 @@ const DetailPageTernak = ({ id }: DetailPageTernakProps) => {
     );
   }
 
-  const masaTernak = Math.floor(
-    (new Date().getTime() - new Date(data.tgl_masuk).getTime()) /
-      (1000 * 60 * 60 * 24),
-  );
-  const kenaikanBerat = data.beratAkhir - data.beratAwal;
-
   return (
     <div className="max-w-6xl mx-auto w-full px-4 py-8 lg:py-12 selection:bg-amber-200">
       {/* Dynamic Floating Action Header */}
@@ -139,9 +150,9 @@ const DetailPageTernak = ({ id }: DetailPageTernakProps) => {
         </Link>
       </div>
 
-      {/* Main Content Layout - Asymmetric Modern Look */}
+      {/* Main Content Layout */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
-        {/* Left Column: Cinematic Visual Card */}
+        {/* Left Column: Visual Card */}
         <div className="lg:col-span-5 space-y-6">
           <div
             className={`relative group rounded-[2.5rem] overflow-hidden bg-neutral-100 dark:bg-neutral-900 border border-neutral-200/60 dark:border-neutral-800/60 shadow-2xl shadow-neutral-200/40 dark:shadow-none ${data.imageUrl ? "cursor-zoom-in" : ""}`}
@@ -167,7 +178,6 @@ const DetailPageTernak = ({ id }: DetailPageTernakProps) => {
                 </div>
               )}
 
-              {/* Artistic Blur Overlay Badges */}
               <div className="absolute bottom-6 left-6 right-6 flex flex-wrap gap-2 pointer-events-none">
                 <span className="px-4 py-2 rounded-xl bg-black/40 backdrop-blur-md text-[11px] font-bold text-white uppercase tracking-widest border border-white/10">
                   {data.jenis_hewan}
@@ -190,7 +200,6 @@ const DetailPageTernak = ({ id }: DetailPageTernakProps) => {
             </div>
           </div>
 
-          {/* Health & Pregnancy Quick Badge */}
           {data.statusHamil === "HAMIL" && (
             <div className="flex items-center gap-4 p-5 bg-pink-50 dark:bg-pink-950/20 border border-pink-100 dark:border-pink-900/30 rounded-3xl animate-pulse">
               <div className="w-10 h-10 bg-pink-500 rounded-2xl flex items-center justify-center text-white shadow-md shadow-pink-500/20">
@@ -210,7 +219,6 @@ const DetailPageTernak = ({ id }: DetailPageTernakProps) => {
 
         {/* Right Column: Information Flow */}
         <div className="lg:col-span-7 space-y-6 lg:pt-2">
-          {/* Header Title Typography */}
           <div>
             <span className="text-xs font-bold uppercase tracking-widest text-amber-600 dark:text-amber-500">
               Kode Ternak: {data.kode_hewan || `#${id.slice(-5)}`}
@@ -220,7 +228,7 @@ const DetailPageTernak = ({ id }: DetailPageTernakProps) => {
             </h1>
           </div>
 
-          {/* 📌 LOKASI KANDANG & SEKAT CARD (NEW DESIGN) */}
+          {/* LOKASI KANDANG & SEKAT */}
           <div className="p-6 bg-linear-to-br from-amber-50/60 to-orange-50/30 dark:from-neutral-900/40 dark:to-neutral-900/10 border border-amber-100/70 dark:border-neutral-800/80 rounded-3xl shadow-sm space-y-4">
             <h3 className="text-xs font-bold uppercase tracking-wider text-amber-800 dark:text-amber-500 flex items-center gap-2">
               <Home size={16} /> Penempatan Tata Ruang
@@ -267,10 +275,9 @@ const DetailPageTernak = ({ id }: DetailPageTernakProps) => {
             </div>
           </div>
 
-          {/* Grid Stats Minimalist */}
+          {/* Grid Stats */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-            {/* Weight Card */}
-            <div className="p-6 bg-neutral-50 dark:bg-neutral-900/40 border border-neutral-200/50 dark:border-neutral-800/50 rounded-3xl transition-all hover:bg-neutral-100/50 dark:hover:bg-neutral-900/70">
+            <div className="p-6 bg-neutral-50 dark:bg-neutral-900/40 border border-neutral-200/50 dark:border-neutral-800/50 rounded-3xl transition-all">
               <div className="flex items-center gap-3 mb-3 text-neutral-500">
                 <Scale size={18} />
                 <span className="text-xs font-bold uppercase tracking-wider">
@@ -289,8 +296,7 @@ const DetailPageTernak = ({ id }: DetailPageTernakProps) => {
               </p>
             </div>
 
-            {/* Age Card */}
-            <div className="p-6 bg-neutral-50 dark:bg-neutral-900/40 border border-neutral-200/50 dark:border-neutral-800/50 rounded-3xl transition-all hover:bg-neutral-100/50 dark:hover:bg-neutral-900/70">
+            <div className="p-6 bg-neutral-50 dark:bg-neutral-900/40 border border-neutral-200/50 dark:border-neutral-800/50 rounded-3xl transition-all">
               <div className="flex items-center gap-3 mb-3 text-neutral-500">
                 <Calendar size={18} />
                 <span className="text-xs font-bold uppercase tracking-wider">
@@ -321,67 +327,116 @@ const DetailPageTernak = ({ id }: DetailPageTernakProps) => {
         </div>
       </div>
 
-      {/* Progress Analytics Minimalist */}
-      <div className="p-6 mt-10 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-3xl space-y-6">
-        <h3 className="text-sm font-bold uppercase tracking-wider text-neutral-400 flex items-center gap-2">
-          <TrendingUp size={16} /> Metrik Perkembangan
-        </h3>
+      {/* PREDIKSI BOBOT MACHINE LEARNING */}
+      {isLoading && (
+        <div className="mt-8 text-sm text-amber-500 animate-pulse flex items-center gap-2">
+          <BrainCircuit size={16} className="animate-spin" /> Menghitung
+          proyeksi pertumbuhan dari core AI...
+        </div>
+      )}
 
-        <div className="space-y-4">
-          {/* Progress 1: Masa Ternak */}
-          <div>
-            <div className="flex justify-between text-xs font-semibold mb-2">
-              <span className="text-neutral-500">Durasi Pemeliharaan</span>
-              <span className="text-neutral-900 dark:text-white font-bold">
-                {masaTernak} Hari
+      {dataBobot && !isLoading && (
+        <div className="mt-10 grid grid-cols-1 md:grid-cols-3 gap-6 animate-fadeIn">
+          {/* Proyeksi Bulan Depan */}
+          <div className="p-6 bg-neutral-900 border border-neutral-800 rounded-3xl flex flex-col justify-between text-white">
+            <div>
+              <span className="text-xs font-bold uppercase tracking-wider text-amber-400 flex items-center gap-1">
+                <BrainCircuit size={14} /> Prediksi AI Bulan Depan
+              </span>
+              <p className="text-xs text-neutral-400 mt-2">
+                Perkiraan bobot hewan ini bulan depan akan mencapai:
+              </p>
+              <p className="text-4xl font-black text-white mt-1">
+                {dataBobot.prediksi.bobotBulanDepan}{" "}
+                <span className="text-base font-normal text-neutral-400">
+                  Kg
+                </span>
+              </p>
+            </div>
+            <div className="pt-4 border-t border-neutral-800 mt-4">
+              <span className="text-[11px] text-neutral-500 block uppercase font-bold tracking-wider">
+                Klasifikasi Tubuh:
+              </span>
+              <span
+                className={`text-xs font-bold inline-block mt-1 px-2.5 py-1 rounded-lg ${
+                  dataBobot.prediksi.klasifikasi === "Ideal"
+                    ? "bg-emerald-950/50 text-emerald-400 border border-emerald-900/40"
+                    : "bg-red-950/50 text-red-400 border border-red-900/40"
+                }`}
+              >
+                {dataBobot.prediksi.klasifikasi}
               </span>
             </div>
-            <div className="w-full h-2 bg-neutral-100 dark:bg-neutral-800 rounded-full overflow-hidden">
-              <div
-                className="h-full bg-amber-600 rounded-full"
-                style={{ width: `${Math.min(masaTernak / 3.65, 100)}%` }}
-              ></div>
-            </div>
-            <p className="text-[11px] text-neutral-400 mt-1 italic">
-              Masuk pada{" "}
-              {new Date(data.tgl_masuk).toLocaleDateString("id-ID", {
-                day: "numeric",
-                month: "long",
-                year: "numeric",
-              })}
-            </p>
           </div>
 
-          {/* Progress 2: Kenaikan Berat */}
-          <div>
-            <div className="flex justify-between text-xs font-semibold mb-2">
-              <span className="text-neutral-500">Tren Pertumbuhan</span>
-              <span
-                className={`font-bold ${kenaikanBerat >= 0 ? "text-emerald-600" : "text-rose-600"}`}
-              >
-                {kenaikanBerat >= 0 ? `+${kenaikanBerat}` : kenaikanBerat} kg
-              </span>
-            </div>
-            <div className="w-full h-2 bg-neutral-100 dark:bg-neutral-800 rounded-full overflow-hidden">
-              <div
-                className={`h-full rounded-full ${kenaikanBerat >= 0 ? "bg-emerald-500" : "bg-rose-500"}`}
-                style={{
-                  width: `${Math.min(Math.abs(kenaikanBerat) * 4, 100)}%`,
-                }}
-              ></div>
+          {/* Notifikasi Perhatian Operator & Grafik Tren */}
+          <div className="p-6 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-3xl md:col-span-2 space-y-4">
+            <span className="text-xs font-bold uppercase tracking-wider text-neutral-400 flex items-center gap-1">
+              Tren Grafik
+            </span>
+
+            {/* Notifikasi Operator */}
+            {dataBobot.prediksi.butuhPerhatian ? (
+              <div className="bg-red-50 dark:bg-red-950/20 border border-red-100 dark:border-red-900/30 p-3.5 rounded-2xl flex gap-2.5 text-red-700 dark:text-red-400 text-xs">
+                <AlertTriangle className="shrink-0 mt-0.5" size={16} />
+                <p className="font-semibold">
+                  {dataBobot.prediksi.pesanNotifikasi}
+                </p>
+              </div>
+            ) : (
+              <div className="bg-emerald-50 dark:bg-emerald-950/10 border border-emerald-100 dark:border-emerald-900/20 p-3.5 rounded-2xl text-emerald-700 dark:text-emerald-400 text-xs">
+                ✅ Ternak berada dalam kurva berat ideal. Lanjutkan skema pakan
+                yang berlaku saat ini.
+              </div>
+            )}
+
+            {/* Grafik Mini */}
+            <div className="h-30 w-full pt-2">
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={dataBobot.trenGrafik}>
+                  <CartesianGrid
+                    strokeDasharray="3 3"
+                    stroke="#e5e5e5"
+                    className="hidden dark:block dark:stroke-[#262626]"
+                  />
+                  <XAxis
+                    dataKey="bulan"
+                    stroke="#737373"
+                    fontSize={10}
+                    tickLine={false}
+                  />
+                  <YAxis stroke="#737373" fontSize={10} tickLine={false} />
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: "#171717",
+                      borderColor: "#404040",
+                      color: "#fff",
+                      fontSize: 11,
+                    }}
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="bobot"
+                    stroke="#ea580c"
+                    strokeWidth={2.5}
+                    dot={{ r: 3 }}
+                    activeDot={{ r: 5 }}
+                  />
+                </LineChart>
+              </ResponsiveContainer>
             </div>
           </div>
         </div>
-      </div>
+      )}
 
-      {/* Photo Overlay (Lightbox) */}
+      {/* Photo Lightbox */}
       {isPhotoOverlayOpen && data.imageUrl && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-sm cursor-zoom-out"
           onClick={closeOverlay}
         >
           <button
-            className="absolute top-6  cursor-pointer right-6 p-2 rounded-full bg-neutral-800/50 text-white hover:bg-neutral-700/50 transition-colors"
+            className="absolute top-6 cursor-pointer right-6 p-2 rounded-full bg-neutral-800/50 text-white hover:bg-neutral-700/50 transition-colors"
             onClick={closeOverlay}
           >
             <X size={24} />
