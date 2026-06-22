@@ -17,6 +17,7 @@ import {
   JenisKelamin,
   StatusKehamilan,
   ProgramTernak,
+  StatusMenyusui,
 } from "@/src/generated/prisma/client";
 import { TernakFormProps } from "@/src/interface/ternak";
 
@@ -52,6 +53,10 @@ export const TernakForm = ({
   const [umur, setUmur] = useState(initialData?.umur?.toString() || "");
   const [statusHamil, setStatusHamil] = useState<StatusKehamilan>(
     (initialData?.statusHamil as StatusKehamilan) || "TIDAK_HAMIL",
+  );
+
+  const [statusMenyusui, setStatusMenyusui] = useState<StatusMenyusui>(
+    (initialData?.statusMenyusui as StatusMenyusui) || "TIDAK_MENYUSUI",
   );
 
   const [programTernak, setProgramTernak] = useState<ProgramTernak>(
@@ -93,6 +98,9 @@ export const TernakForm = ({
       setUmur(initialData.umur?.toString() || "");
       setStatusHamil(
         (initialData.statusHamil as StatusKehamilan) || "TIDAK_HAMIL",
+      );
+      setStatusMenyusui(
+        (initialData.statusMenyusui as StatusMenyusui) || "TIDAK_MENYUSUI",
       );
       setProgramTernak(
         (initialData.programTernak as ProgramTernak) || "FATTENING",
@@ -151,6 +159,8 @@ export const TernakForm = ({
       tgl_lahir: tglLahir ? new Date(tglLahir) : null,
       umur: parseInt(umur) || 0,
       statusHamil: jenisKelamin === "BETINA" ? statusHamil : "TIDAK_HAMIL",
+      statusMenyusui:
+        jenisKelamin === "BETINA" ? statusMenyusui : "TIDAK_MENYUSUI",
       programTernak: programTernak,
       sekatId: selectedSekatId || null,
       userId: session?.user?.id ?? null,
@@ -283,6 +293,7 @@ export const TernakForm = ({
           </div>
         </div>
 
+        {/* STATUS HAMIL */}
         <div className="flex flex-col gap-2">
           <label className="text-sm font-medium text-neutral-700 dark:text-neutral-400">
             Status Hamil (Khusus Betina)
@@ -307,6 +318,31 @@ export const TernakForm = ({
           </div>
         </div>
 
+        {/* DROPDOWN STATUS MENYUSUI */}
+        <div className="flex flex-col gap-2">
+          <label className="text-sm font-medium text-neutral-700 dark:text-neutral-400">
+            Status Menyusui (Khusus Betina)
+          </label>
+          <div className={selectWrapperClass}>
+            <select
+              value={statusMenyusui}
+              onChange={(e) =>
+                setStatusMenyusui(e.target.value as StatusMenyusui)
+              }
+              disabled={jenisKelamin === "JANTAN"}
+              className={selectClass}
+            >
+              <option className={optionClass} value="TIDAK_MENYUSUI">
+                Tidak Menyusui
+              </option>
+              <option className={optionClass} value="MENYUSUI">
+                Menyusui
+              </option>
+            </select>
+            <ChevronDown className={selectIconClass} />
+          </div>
+        </div>
+
         {/* SECTION PREVIEW & PICKER FOTO */}
         <div className="flex flex-col gap-2">
           <label className="text-sm font-medium text-neutral-700 dark:text-neutral-400">
@@ -319,7 +355,7 @@ export const TernakForm = ({
                 height={400}
                 src={previewUrl}
                 alt="Preview"
-                className="w-full h-[220px] object-contain bg-neutral-50 dark:bg-neutral-900"
+                className="w-full h-55 object-contain bg-neutral-50 dark:bg-neutral-900"
                 unoptimized={previewUrl.startsWith("blob:")}
               />
               <div className="absolute inset-0 bg-black/40 transition-opacity flex items-center justify-center gap-3 opacity-0 group-hover:opacity-100">
@@ -343,7 +379,7 @@ export const TernakForm = ({
               </div>
             </div>
           ) : (
-            <label className="flex flex-col items-center justify-center w-full h-[220px] border-2 border-dashed rounded-xl cursor-pointer transition-all bg-neutral-50/50 hover:bg-neutral-100/50 dark:bg-neutral-800/20 dark:border-neutral-800 dark:hover:bg-neutral-800/50 border-neutral-300 hover:border-amber-500/80 shadow-sm">
+            <label className="flex flex-col items-center justify-center w-full h-55 border-2 border-dashed rounded-xl cursor-pointer transition-all bg-neutral-50/50 hover:bg-neutral-100/50 dark:bg-neutral-800/20 dark:border-neutral-800 dark:hover:bg-neutral-800/50 border-neutral-300 hover:border-amber-500/80 shadow-sm">
               <div className="flex flex-col items-center gap-2">
                 <div className="p-3.5 bg-amber-100/80 dark:bg-amber-950/40 rounded-full text-amber-700 dark:text-amber-500 mb-1">
                   <UploadCloud size={26} />
@@ -403,7 +439,7 @@ export const TernakForm = ({
             type="date"
             value={tglLahir}
             onChange={(e) => setTglLahir(e.target.value)}
-            className={`${inputClass} dark:[color-scheme:dark]`}
+            className={`${inputClass} dark:scheme-dark`}
           />
         </div>
         <div className="flex flex-col gap-2">
