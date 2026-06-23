@@ -5,13 +5,16 @@ import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import toast from "react-hot-toast";
 import Link from "next/link";
-import { Beef, ArrowLeft } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
+import Image from "next/image";
+import { useMounted } from "@/src/hooks/useMounted";
 
 const LoginPage = () => {
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+  const mounted = useMounted();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -37,6 +40,10 @@ const LoginPage = () => {
     }
   };
 
+  if (!mounted) {
+    return null;
+  }
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-white px-4 py-12 sm:px-6 lg:px-8 relative overflow-hidden">
       <div className="max-w-md w-full space-y-8 relative">
@@ -54,7 +61,12 @@ const LoginPage = () => {
         <div className="bg-white p-8 rounded-3xl shadow-2xl border border-neutral-100 transition-all">
           <div className="text-center mb-10">
             <div className="mx-auto w-16 h-16 bg-amber-700 rounded-2xl flex items-center justify-center shadow-lg shadow-amber-200 mb-6">
-              <Beef className="text-white" size={32} />
+              <Image
+                width={50}
+                height={50}
+                alt="Logo Dark"
+                src={"/logo/SuqueezeCage_Light.png"}
+              />
             </div>
             <h2 className="text-3xl font-bold text-neutral-900 tracking-tight">
               Selamat Datang
@@ -139,22 +151,21 @@ const LoginPage = () => {
                   Memproses...
                 </span>
               ) : (
-                "Masuk ke Akun"
+                <span> Masuk</span>
               )}
             </button>
-          </form>
-
-          <div className="mt-8 pt-6 border-t border-neutral-100 text-center">
-            <p className="text-sm text-neutral-500">
-              Belum punya akun?{" "}
-              <Link
-                href="/register"
-                className="font-bold text-amber-700 hover:underline"
+            <p className="text-sm pt-8 text-neutral-500">
+              Belum punya akun? Hubungi admin yang tertera di{" "}
+              <a
+                href="https://wa.me/6285389371126"
+                className="hover:text-black underline hover:font-semibold"
+                target="_blank"
               >
-                Daftar Sekarang
-              </Link>
+                kontak
+              </a>
+              .
             </p>
-          </div>
+          </form>
         </div>
       </div>
     </div>
