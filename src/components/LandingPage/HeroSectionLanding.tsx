@@ -17,7 +17,8 @@ const HeroSectionLanding = () => {
   const textRef = useRef<HTMLHeadingElement>(null);
   const imageWrapperRef = useRef(null);
 
-  const finalTitle = "Penimbangan Berat Ternak Berbasis IoT & Machine Learning";
+  const finalTitle =
+    "Penimbangan Berat Ternak Berbasis IoT & Machine Learning (SqueezeCage)";
   const chars = "----------------------";
 
   useEffect(() => {
@@ -66,7 +67,7 @@ const HeroSectionLanding = () => {
       tl.to(
         imageWrapperRef.current,
         {
-          scale: 1.15,
+          scale: 1.2,
           width: "100%",
           borderRadius: "0px",
           ease: "none",
@@ -83,7 +84,7 @@ const HeroSectionLanding = () => {
   return (
     <section
       ref={sectionRef}
-      className="relative bg-white w-full overflow-hidden min-h-screen flex flex-col items-center justify-center pt-20 md:pt-32"
+      className="bg-white w-full overflow-hidden min-h-screen flex flex-col items-center justify-center pt-20 md:pt-32"
     >
       <div className="flex flex-col space-y-8 max-w-7xl px-6 md:px-22 mx-auto z-20 md:py-15 w-full">
         <h1
