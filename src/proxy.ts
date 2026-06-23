@@ -24,7 +24,7 @@ export async function proxy(req: NextRequest) {
 
   const isProtectedPage = onlySignIn.some((path) => pathname.startsWith(path));
 
-  if (pathname.startsWith("/login") || pathname.startsWith("/register")) {
+  if (pathname.startsWith("/login")) {
     if (isAuth) {
       return NextResponse.redirect(new URL("/dashboard", req.url));
     }
@@ -51,7 +51,6 @@ export const config = {
     "/profile/:path*",
     "/users/:path*",
     "/login",
-    "/register",
     "/ternak/:path*",
     "/timbangan:path*",
     "/kandang-sekat",
