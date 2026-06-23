@@ -108,9 +108,9 @@ const KandangForm = () => {
 
       if (success) {
         toast.success(`Berhasil menghapus data ${deleteModal.name}`);
-        setDeleteModal((prev) => ({ ...prev, open: false })); // ✨ Tutup modal setelah sukses
+        setDeleteModal((prev) => ({ ...prev, open: false }));
       } else {
-        toast.success(`Gagal menghapus data ${deleteModal.name}`);
+        toast.error(`Gagal menghapus data ${deleteModal.name}`);
       }
     }
 
@@ -119,9 +119,9 @@ const KandangForm = () => {
       if (success) {
         toast.success(`Berhasil menghapus data ${deleteModal.name}`);
 
-        setDeleteModal((prev) => ({ ...prev, open: false })); // ✨ Tutup modal setelah sukses
+        setDeleteModal((prev) => ({ ...prev, open: false }));
       } else {
-        toast.success(`Berhasil menghapus data ${deleteModal.name}`);
+        toast.error(`Gagal menghapus data ${deleteModal.name}`);
       }
     }
   };
@@ -142,7 +142,6 @@ const KandangForm = () => {
       </div>
 
       <div className="flex flex-col gap-8 w-full">
-        {/* ================= PANEL FORM: MOBILE (1 COLUMN) / DESKTOP (2 COLUMNS) ================= */}
         <div className="flex flex-col md:flex-row w-full items-stretch gap-6">
           {/* FORM KANDANG */}
           <form
@@ -261,7 +260,6 @@ const KandangForm = () => {
           </form>
         </div>
 
-        {/* ================= PANEL TABEL: MOBILE (1 COLUMN) / DESKTOP (2 COLUMNS) ================= */}
         <div className="flex flex-col md:flex-row justify-center gap-6 py-4 md:py-10">
           {/* TABEL DAFTAR KANDANG */}
           <div className="flex flex-col w-full md:w-1/2 gap-3">
@@ -351,7 +349,6 @@ const KandangForm = () => {
         </div>
       </div>
 
-      {/* ================= REUSABLE CONFIRM DELETE DIALOG ================= */}
       <ConfirmDeleteDialog
         open={deleteModal.open}
         title={
