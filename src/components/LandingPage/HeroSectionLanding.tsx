@@ -67,7 +67,7 @@ const HeroSectionLanding = () => {
       tl.to(
         imageWrapperRef.current,
         {
-          scale: 1.2,
+          scale: 1.09,
           width: "100%",
           borderRadius: "0px",
           ease: "none",
