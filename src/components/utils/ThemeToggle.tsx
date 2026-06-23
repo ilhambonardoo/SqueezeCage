@@ -19,7 +19,7 @@ export default function ThemeToggle() {
   return (
     <div className="w-full px-2">
       <button
-        onClick={() => setTheme(isDark ? "dark" : "light")}
+        onClick={() => setTheme(isDark ? "light" : "dark")}
         className="group relative  cursor-pointer flex w-full items-center gap-3 overflow-hidden rounded-xl p-2 transition-colors hover:bg-zinc-100 dark:hover:bg-zinc-800"
         aria-label="Toggle theme"
       >
