@@ -43,7 +43,7 @@ export async function GET(
             ternak.jenis_hewan.charAt(0).toUpperCase() +
             ternak.jenis_hewan.slice(1).toLocaleLowerCase();
 
-          const urlApi = `${process.env.NEXT_PUBLIC_FASTAPI_URL || "http://127.0.0.1:8000/"}`;
+          const urlApi = `${process.env.NEXT_PUBLIC_FASTAPI_URL || "http://127.0.0.1:8000"}`;
 
           const resFastAPI = await fetch(`${urlApi}/prediksi-pakan`, {
             method: "POST",

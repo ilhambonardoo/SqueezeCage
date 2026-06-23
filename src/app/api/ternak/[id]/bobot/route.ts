@@ -29,7 +29,7 @@ export async function GET(
         ternak.jenis_hewan.charAt(0).toUpperCase() +
         ternak.jenis_hewan.slice(1).toLowerCase();
 
-      const urlApi = `${process.env.NEXT_PUBLIC_FASTAPI_URL || "http://127.0.0.1:8000/"}`;
+      const urlApi = `${process.env.NEXT_PUBLIC_FASTAPI_URL || "http://127.0.0.1:8000"}`;
       const restApi = await fetch(`${urlApi}/prediksi-bobot`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -45,7 +45,7 @@ export async function GET(
         bobotBulanDepan = dataML.bobot_hewan.berat_aktual;
       }
     } catch {
-      return { bobotBulanDepan: 0 };
+      console.warn("Gagal mengambil prediksi ML, menggunakan fallback bobot 0");
     }
 
     let klasifikasi = "Ideal";
