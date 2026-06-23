@@ -48,7 +48,7 @@ async function main() {
         Math.floor(Math.random() * 12),
         Math.floor(Math.random() * 28) + 1,
       ),
-      tgl_Masuk: new Date(2026, 0, Math.floor(Math.random() * 28) + 1),
+      tgl_masuk: new Date(2026, 0, Math.floor(Math.random() * 28) + 1),
       statusHamil:
         isBetina && i % 4 === 0
           ? StatusKehamilan.HAMIL
@@ -73,7 +73,7 @@ async function main() {
         {
           berat: item.beratAwal,
           ternakId: ternak.id,
-          tgl_cek: item.tgl_Masuk,
+          tgl_cek: item.tgl_masuk,
         },
         {
           berat: item.beratAkhir,
