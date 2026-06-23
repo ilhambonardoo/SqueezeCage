@@ -7,7 +7,6 @@ import {
   Plus,
   LucideScale3D,
   Wheat,
-  History,
   Warehouse,
 } from "lucide-react";
 

@@ -105,6 +105,11 @@ const Sidebar = () => {
         )}
       >
         <div className="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar">
+          <div className=" bg-white dark:bg-neutral-900 flex relative">
+            <div className="absolute right-0 top-1">
+              <ThemeToggle isOpen={isOpen} />
+            </div>
+          </div>
           {isOpen && (
             <div className="px-4 pt-20">
               <div className="bg-neutral-50 dark:bg-neutral-800/50 p-3 rounded-2xl border border-neutral-100 dark:border-neutral-800 flex items-center gap-3 group">
@@ -269,42 +274,24 @@ const Sidebar = () => {
                 </div>
               );
             })}
-          </nav>
-        </div>
-
-        <div className="mt-auto bg-white dark:bg-neutral-900">
-          <ThemeToggle isOpen={isOpen} />
-
-          <div className="p-3 border-t border-neutral-100 dark:border-neutral-800">
-            <motion.button
-              whileHover={{
-                scale: 1.02,
-                backgroundColor: "rgba(254, 242, 242, 1)",
-              }}
-              whileTap={{ scale: 0.98 }}
-              className={cn(
-                "w-full flex items-center gap-3 px-3 py-2.5 cursor-pointer rounded-xl text-red-500 transition-colors duration-200 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/20",
-                !isOpen && "justify-center",
-              )}
-              onClick={() => {
-                signOut({ callbackUrl: "/" });
-              }}
-            >
-              <LogOut size={20} className="shrink-0" />
-              <AnimatePresence>
-                {isOpen && (
-                  <motion.span
-                    initial={{ opacity: 0, x: -10 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: -10 }}
-                    className="font-medium whitespace-nowrap text-sm"
+            <div className="absolute left-3 bottom-10">
+              {isOpen && (
+                <>
+                  <button
+                    className={cn(
+                      "w-full flex items-center gap-3 px-3 py-2.5 cursor-pointer rounded-xl text-red-500 transition-colors duration-200 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/20",
+                      !isOpen && "justify-center",
+                    )}
+                    onClick={() => {
+                      signOut({ callbackUrl: "/" });
+                    }}
                   >
-                    Keluar
-                  </motion.span>
-                )}
-              </AnimatePresence>
-            </motion.button>
-          </div>
+                    <LogOut size={20} className="shrink-0" /> Keluar
+                  </button>
+                </>
+              )}
+            </div>
+          </nav>
         </div>
       </motion.aside>
 

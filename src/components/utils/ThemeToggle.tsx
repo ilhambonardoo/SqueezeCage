@@ -41,21 +41,6 @@ export default function ThemeToggle({ isOpen }: { isOpen: boolean }) {
           </AnimatePresence>
         </div>
 
-        <AnimatePresence>
-          {isOpen && (
-            <motion.div
-              initial={{ opacity: 0, x: -10 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -10 }}
-              className="flex flex-col items-start overflow-hidden whitespace-nowrap"
-            >
-              <span className="text-sm font-medium text-zinc-900 dark:text-zinc-100">
-                {isDark ? "Mode Terang" : "Mode Gelap"}
-              </span>
-            </motion.div>
-          )}
-        </AnimatePresence>
-
         <div className="absolute inset-0 -z-10 bg-linear-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
       </button>
     </div>
