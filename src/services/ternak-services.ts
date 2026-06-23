@@ -121,11 +121,20 @@ export async function createTernak(formData: TernakModel) {
     };
   }
 
-  const ternak = await prisma.ternak.create({
-    data: {
-      userId: formData.userId,
-      ...parseTernakData(formData),
-    },
+  const parsedData = parseTernakData(formData);
+  const ternak = await prisma.$transaction(async (tx) => {
+    const newTernak = await tx.ternak.create({
+      data: {
+        userId: formData.userId,
+        ...parsedData,
+      },
+    });
+
+    await tx.riwayatBerat.create({
+      data: { berat: parsedData.beratAwal, ternakId: newTernak.id },
+    });
+
+    return newTernak;
   });
 
   revalidatePath("/ternak");
@@ -171,18 +180,33 @@ export async function updateTernak(
     }
   }
 
-  const updateTernak = await prisma.ternak.update({
-    where: { id },
-    data: {
-      ...parseTernakData(formData),
-    },
+  const parsedData = parseTernakData(formData);
+
+  const updatedTernakData = await prisma.$transaction(async (tx) => {
+    const updated = await tx.ternak.update({
+      where: { id },
+      data: {
+        ...parsedData,
+      },
+    });
+
+    if (existingTernak.beratAkhir !== parsedData.beratAkhir) {
+      await tx.riwayatBerat.create({
+        data: {
+          berat: parsedData.beratAkhir,
+          ternakId: id,
+        },
+      });
+    }
+
+    return updated;
   });
 
   revalidatePath("/ternak");
 
   return {
     status: 200,
-    data: updateTernak,
+    data: updatedTernakData,
     message: "Data ternak berhasil di ubah!",
   };
 }
