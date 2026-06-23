@@ -9,7 +9,6 @@ import { TernakForm } from "@/src/components/TernakPage/TernakForm";
 import { TernakModel } from "@/src/interface/ternak";
 import { Ternak } from "@/src/generated/prisma/client";
 import { useUploadThing } from "@/src/hooks/useUploadthing";
-// Hooks useKandang dihapus/tidak dipakai jika data diambil via useEffect service
 import { getTernakById } from "@/src/services/ternak-services";
 import { getAllKandangWithSekat } from "@/src/services/kandang-services";
 import { KandangWithSekat } from "@/src/interface/kandang-sekat";
@@ -44,7 +43,7 @@ const EditTernakPage = ({ id }: EditTernakPageProps) => {
         if (kandangRes.status !== 200)
           throw new Error("Gagal memuat data kandang");
 
-        setInitialData(ternakRes.data);
+        setInitialData(ternakRes?.data || null);
         setKandangList(kandangRes?.data || []);
       } catch {
         toast.error("Gagal mengambil data ternak");
