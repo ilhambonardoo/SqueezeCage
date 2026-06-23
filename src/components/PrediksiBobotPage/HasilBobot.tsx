@@ -24,39 +24,43 @@ const HasilBobot = ({ dataBobot, isLoading }: HasilBobotProps) => {
       {dataBobot && !isLoading && (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 animate-fadeIn">
           {/* CARD UTAMA: PREDIKSI BULAN DEPAN */}
-          <div className="bg-neutral-900/40 border border-neutral-800 p-6 rounded-2xl md:col-span-1 flex flex-col justify-between gap-4">
+          <div className="bg-white dark:bg-neutral-900/40 border border-neutral-200 dark:border-neutral-800 p-6 rounded-2xl md:col-span-1 flex flex-col justify-between gap-4 shadow-sm dark:shadow-none transition-colors duration-300">
             <div>
-              <span className="text-xs font-bold uppercase tracking-wider text-neutral-400 flex items-center gap-1">
+              <span className="text-xs font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400 flex items-center gap-1">
                 PREDIKSI BERAT
               </span>
               {/* BOBOT SEKARANG */}
-              <h2 className="text-sm text-neutral-300 mt-3">
+              <h2 className="text-sm text-neutral-600 dark:text-neutral-300 mt-3">
                 Bobot sekarang mencapai :
               </h2>
-              <p className="text-4xl font-extrabold text-amber-400 mt-1">
+              <p className="text-4xl font-extrabold text-amber-600 dark:text-amber-400 mt-1">
                 {dataBobot.detailTernak.beratAkhir}
-                <span className="text-lg font-normal text-neutral-400">Kg</span>
+                <span className="text-lg font-normal text-neutral-500 dark:text-neutral-400 ml-1">
+                  Kg
+                </span>
               </p>
               {/* BOBOT PREDIKSI */}
-              <h2 className="text-sm text-neutral-300 mt-3">
+              <h2 className="text-sm text-neutral-600 dark:text-neutral-300 mt-3">
                 Perkiraan bobot bulan depan akan mencapai:
               </h2>
-              <p className="text-4xl font-extrabold text-amber-400 mt-1">
+              <p className="text-4xl font-extrabold text-amber-600 dark:text-amber-400 mt-1">
                 {dataBobot.prediksi.bobotBulanDepan}{" "}
-                <span className="text-lg font-normal text-neutral-400">Kg</span>
+                <span className="text-lg font-normal text-neutral-500 dark:text-neutral-400 ml-1">
+                  Kg
+                </span>
               </p>
             </div>
 
             {/* STATUS KLASIFIKASI */}
-            <div className="pt-4 border-t border-neutral-800">
-              <span className="text-xs text-neutral-400 block">
+            <div className="pt-4 border-t border-neutral-200 dark:border-neutral-800">
+              <span className="text-xs text-neutral-500 dark:text-neutral-400 block mb-1">
                 Klasifikasi Kondisi Tubuh:
               </span>
               <span
-                className={`text-lg font-bold inline-block mt-1 px-3 py-1 rounded-lg ${
+                className={`text-sm font-bold inline-block px-3 py-1 rounded-lg ${
                   dataBobot.prediksi.klasifikasi === "Ideal"
-                    ? "bg-emerald-950/40 text-emerald-400 border border-emerald-900"
-                    : "bg-red-950/40 text-red-400 border border-red-900"
+                    ? "bg-emerald-100 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 border border-emerald-300 dark:border-emerald-900"
+                    : "bg-red-100 dark:bg-red-950/40 text-red-700 dark:text-red-400 border border-red-300 dark:border-red-900"
                 }`}
               >
                 {dataBobot.prediksi.klasifikasi}
@@ -65,21 +69,21 @@ const HasilBobot = ({ dataBobot, isLoading }: HasilBobotProps) => {
           </div>
 
           {/* CARD NOTIFIKASI OPERATOR */}
-          <div className="bg-neutral-900/40 border border-neutral-800 p-6 rounded-2xl md:col-span-2 flex flex-col gap-4">
-            <h3 className="text-base font-semibold text-neutral-200 flex items-center gap-2">
-              <Info size={18} className="text-blue-400" /> Pusat Kendali
-              Kesehatan Ternak
+          <div className="bg-white dark:bg-neutral-900/40 border border-neutral-200 dark:border-neutral-800 p-6 rounded-2xl md:col-span-2 flex flex-col gap-4 shadow-sm dark:shadow-none transition-colors duration-300">
+            <h3 className="text-base font-semibold text-neutral-800 dark:text-neutral-200 flex items-center gap-2">
+              <Info size={18} className="text-blue-600 dark:text-blue-400" />{" "}
+              Pusat Kendali Kesehatan Ternak
             </h3>
 
             {dataBobot.prediksi.butuhPerhatian ? (
-              <div className="bg-red-950/30 border border-red-900/50 p-4 rounded-xl flex gap-3 text-red-400 text-sm">
+              <div className="bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900/50 p-4 rounded-xl flex gap-3 text-red-700 dark:text-red-400 text-sm">
                 <AlertTriangle className="shrink-0 mt-0.5" size={18} />
                 <p className="font-medium">
                   {dataBobot.prediksi.pesanNotifikasi}
                 </p>
               </div>
             ) : (
-              <div className="bg-emerald-950/20 border border-emerald-900/40 p-4 rounded-xl text-emerald-400 text-sm">
+              <div className="bg-emerald-50 dark:bg-emerald-950/20 border border-emerald-200 dark:border-emerald-900/40 p-4 rounded-xl text-emerald-700 dark:text-emerald-400 text-sm">
                 ✅ Ternak dalam kondisi prima dan pertumbuhan terpantau stabil
                 sesuai standar kurva.
               </div>
@@ -87,26 +91,40 @@ const HasilBobot = ({ dataBobot, isLoading }: HasilBobotProps) => {
 
             {/* GRAFIK TREN */}
             <div className="mt-2 flex-1 min-h-45">
-              <span className="text-xs text-neutral-400 mb-2 block items-center gap-1">
+              <span className="text-xs font-medium text-neutral-500 dark:text-neutral-400 mb-3 flex items-center gap-1">
                 <TrendingUp size={14} /> Grafik Tren & Riwayat Pertumbuhan (Kg)
               </span>
-              <ResponsiveContainer width="100%" height={150}>
+              <ResponsiveContainer width="100%" height={160}>
                 <LineChart data={dataBobot.trenGrafik}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#262626" />
-                  <XAxis dataKey="bulan" stroke="#737373" fontSize={11} />
-                  <YAxis stroke="#737373" fontSize={11} />
+                  <CartesianGrid
+                    strokeDasharray="3 3"
+                    stroke="currentColor"
+                    className="text-neutral-200 dark:text-neutral-800"
+                  />
+                  <XAxis
+                    dataKey="bulan"
+                    stroke="currentColor"
+                    className="text-neutral-500 dark:text-neutral-400"
+                    fontSize={11}
+                    tickLine={false}
+                  />
+                  <YAxis
+                    stroke="currentColor"
+                    className="text-neutral-500 dark:text-neutral-400"
+                    fontSize={11}
+                    tickLine={false}
+                  />
                   <Tooltip
                     contentStyle={{
-                      backgroundColor: "#171717",
-                      borderColor: "#404040",
-                      color: "#fff",
+                      backgroundColor: "var(--tw-shadow-color, #fff)",
                     }}
                   />
                   <Line
                     type="monotone"
                     dataKey="bobot"
-                    stroke="#f59e0b"
+                    stroke="#d97706"
                     strokeWidth={3}
+                    dot={{ fill: "#d97706", r: 4 }}
                     activeDot={{ r: 6 }}
                   />
                 </LineChart>

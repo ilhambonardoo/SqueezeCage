@@ -40,31 +40,31 @@ export default function PrediksiPakanPage() {
     return kandangTerpilih?.sekatList || [];
   }, [selectedKandangId, kandangList]);
 
-  // Reusable Tailwind classes biar konsisten dengan UI gelap Anda
   const selectWrapperClass = "relative w-full flex items-center";
   const selectClass =
-    "w-full h-12 pl-4 pr-10 rounded-xl border border-neutral-800 bg-transparent text-neutral-200 outline-none focus:ring-2 focus:ring-amber-500/50 transition-all text-sm appearance-none cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed";
+    "w-full h-12 pl-4 pr-10 rounded-xl border border-neutral-300 dark:border-neutral-800 bg-white dark:bg-transparent text-neutral-800 dark:text-neutral-200 outline-none focus:ring-2 focus:ring-amber-500/50 transition-all text-sm appearance-none cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed";
   const selectIconClass =
-    "absolute right-3 text-neutral-400 pointer-events-none w-4 h-4";
-  const optionClass = "bg-neutral-900 text-white";
+    "absolute right-3 text-neutral-500 dark:text-neutral-400 pointer-events-none w-4 h-4";
+  const optionClass =
+    "bg-white text-neutral-800 dark:bg-neutral-900 dark:text-white";
 
   return (
-    <div className="p-6 md:p-8 text-white max-w-5xl mx-auto flex flex-col gap-6 min-h-screen">
+    <div className="p-6 md:p-8 text-neutral-900 dark:text-white max-w-5xl mx-auto flex flex-col gap-6 min-h-screen transition-colors duration-300">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight">
+        <h1 className="text-2xl font-bold tracking-tight text-neutral-900 dark:text-white">
           Prediksi Kebutuhan Pakan
         </h1>
-        <p className="text-sm text-neutral-400 mt-1">
+        <p className="text-sm text-neutral-500 dark:text-neutral-400 mt-1">
           Pilih lokasi area kandang dan nomor petak sekat untuk melihat
           akumulasi kebutuhan target hijauan dan konsentrat dari AI.
         </p>
       </div>
 
       {/* FILTER DROPDOWN AREA */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-5 bg-neutral-900/50 p-6 rounded-2xl border border-neutral-800/80 shadow-sm">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-5 bg-neutral-100/70 dark:bg-neutral-900/50 p-6 rounded-2xl border border-neutral-200 dark:border-neutral-800/80 shadow-sm transition-colors duration-300">
         {/* PILIHAN KANDANG */}
         <div className="flex flex-col gap-2">
-          <label className="text-sm font-medium text-neutral-400">
+          <label className="text-sm font-medium text-neutral-600 dark:text-neutral-400">
             Gedung Kandang Induk
           </label>
           <div className={selectWrapperClass}>
@@ -95,7 +95,7 @@ export default function PrediksiPakanPage() {
 
         {/* PILIHAN SEKAT */}
         <div className="flex flex-col gap-2">
-          <label className="text-sm font-medium text-neutral-400">
+          <label className="text-sm font-medium text-neutral-600 dark:text-neutral-400">
             Nomor / Kode Sekat Ruangan
           </label>
           <div className={selectWrapperClass}>
@@ -123,8 +123,8 @@ export default function PrediksiPakanPage() {
 
       {/* LOADING STATE */}
       {isLoading && (
-        <div className="flex items-center gap-3 text-amber-500 bg-amber-950/20 border border-amber-900/30 p-4 rounded-xl justify-center animate-pulse">
-          <div className="animate-spin rounded-full w-5 h-5 border-2 border-amber-500/30 border-t-amber-500" />
+        <div className="flex items-center gap-3 text-amber-600 dark:text-amber-500 bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-900/30 p-4 rounded-xl justify-center animate-pulse transition-colors duration-300">
+          <div className="animate-spin rounded-full w-5 h-5 border-2 border-amber-500/30 border-t-amber-600 dark:border-t-amber-500" />
           <span className="text-sm font-medium">
             Model Machine Learning sedang menghitung pakan sekat...
           </span>

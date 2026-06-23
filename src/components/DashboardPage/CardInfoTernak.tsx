@@ -1,6 +1,17 @@
 "use client";
 import { useTernak } from "@/src/hooks/useTernak";
 import { useMounted } from "@/src/hooks/useMounted";
+import { IoFemale, IoMale } from "react-icons/io5";
+import { GiGoat, GiSheep } from "react-icons/gi";
+import { IconType } from "react-icons/lib";
+
+interface CardItemsDashboard {
+  label: string;
+  count: number;
+  icon: IconType;
+  bgIcon: string;
+  hoverBorder: string;
+}
 
 const CardInfoTernak = () => {
   const mounted = useMounted();
@@ -8,39 +19,39 @@ const CardInfoTernak = () => {
 
   if (!mounted) return null;
 
-  const cardItems = [
+  const cardItems: CardItemsDashboard[] = [
     {
       label: "Total Kambing",
       count: stats?.kambing || 0,
-      icon: "🐐",
+      icon: GiGoat,
       bgIcon: "bg-amber-100 dark:bg-amber-900/30",
       hoverBorder: "hover:border-amber-500/50",
     },
     {
       label: "Total Domba",
       count: stats?.domba || 0,
-      icon: "🐑",
+      icon: GiSheep,
       bgIcon: "bg-blue-100 dark:bg-blue-900/30",
       hoverBorder: "hover:border-blue-500/50",
     },
     {
       label: "Ternak Jantan",
       count: stats?.jantan || 0,
-      icon: "♂️",
+      icon: IoMale,
       bgIcon: "bg-purple-100 dark:bg-purple-900/30",
       hoverBorder: "hover:border-purple-500/50",
     },
     {
       label: "Ternak Betina",
       count: stats?.betina || 0,
-      icon: "♀️",
+      icon: IoFemale,
       bgIcon: "bg-pink-100 dark:bg-pink-900/30",
       hoverBorder: "hover:border-pink-500/50",
     },
   ];
 
   return (
-    <section className="w-full p-6 lg:p-10 pt-2">
+    <section className="w-full p-6 lg:p-8 pt-2">
       <div className="mb-8">
         <h2 className="text-xl lg:text-2xl font-plenty text-neutral-800 dark:text-neutral-100">
           Informasi Komposisi Ternak
@@ -65,7 +76,7 @@ const CardInfoTernak = () => {
               <div
                 className={`w-10 h-10 ${item.bgIcon} rounded-2xl flex items-center justify-center text-xl shadow-inner`}
               >
-                {item.icon}
+                <item.icon className="text-neutral-800 dark:text-neutral-200" />
               </div>
             </div>
 
