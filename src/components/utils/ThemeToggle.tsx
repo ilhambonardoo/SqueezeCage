@@ -5,7 +5,7 @@ import { useTheme } from "next-themes";
 import { motion, AnimatePresence } from "framer-motion";
 import { useMounted } from "@/src/hooks/useMounted";
 
-export default function ThemeToggle({ isOpen }: { isOpen: boolean }) {
+export default function ThemeToggle() {
   const { theme, setTheme } = useTheme();
 
   const mounted = useMounted();
