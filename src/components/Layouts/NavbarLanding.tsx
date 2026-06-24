@@ -40,7 +40,7 @@ const NavbarLanding = () => {
               width={150}
               height={150}
               alt="Logo Dark"
-              src={"/logo/SqueezeCage_KalimatDark.png"}
+              src={"/logo/SqueezeCage_KalimatDark.webp"}
             />
           </Link>
 

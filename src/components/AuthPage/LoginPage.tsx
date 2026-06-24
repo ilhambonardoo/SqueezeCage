@@ -65,7 +65,7 @@ const LoginPage = () => {
                 width={50}
                 height={50}
                 alt="Logo Dark"
-                src={"/logo/SuqueezeCage_Light.png"}
+                src={"/logo/SuqueezeCage_Light.webp"}
               />
             </div>
             <h2 className="text-3xl font-bold text-neutral-900 tracking-tight">

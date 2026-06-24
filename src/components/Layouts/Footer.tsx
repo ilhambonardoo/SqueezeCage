@@ -26,7 +26,7 @@ const Footer = () => {
                   width={50}
                   height={50}
                   alt="Logo light"
-                  src={"/logo/SuqueezeCage_Light.png"}
+                  src={"/logo/SuqueezeCage_Light.webp"}
                 />
               </div>
               <span className="font-plenty text-xl text-white tracking-wide uppercase">

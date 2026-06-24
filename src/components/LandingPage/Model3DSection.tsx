@@ -33,7 +33,7 @@ const Model3DSection = () => {
               playsInline
               preload="auto"
             >
-              <source src="/video/animasi-kandang.mp4" type="video/mp4" />
+              <source src="/video/animasi-kandang.webm" type="video/webm" />
               Your browser does not support the video tag.
             </video>
 

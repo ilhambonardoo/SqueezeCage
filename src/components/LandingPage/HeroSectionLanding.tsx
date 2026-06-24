@@ -125,7 +125,7 @@ const HeroSectionLanding = () => {
             playsInline
             preload="auto"
           >
-            <source src="/video/video-kambing.mp4" type="video/mp4" />
+            <source src="/video/video-kambing.webm" type="video/webm" />
             Your browser does not support the video tag.
           </video>
         </div>
