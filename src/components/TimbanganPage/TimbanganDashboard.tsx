@@ -2,7 +2,6 @@
 import { motion } from "framer-motion";
 import { LiveWeightCard } from "./LineWeightCard";
 import { useMounted } from "@/src/hooks/useMounted";
-import HistoryWeightCard from "./HistoryWeightCard";
 
 export const TimbanganDashboard = () => {
   const mounted = useMounted();
@@ -19,16 +18,6 @@ export const TimbanganDashboard = () => {
             className="relative overflow-hidden bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-4xl md:rounded-[3rem] p-6 md:p-10 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.3)] transition-all duration-500 w-full lg:flex-1"
           >
             <LiveWeightCard />
-          </motion.section>
-
-          {/* Analytics Card */}
-          <motion.section
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-4xl md:rounded-[3rem] p-6 md:p-10 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.3)] flex flex-col w-full lg:flex-1"
-          >
-            <HistoryWeightCard />
           </motion.section>
         </main>
       </div>
