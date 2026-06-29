@@ -20,9 +20,33 @@ export interface SekatWithKandang extends Sekat {
   kandang: Kandang;
 }
 
-// Untuk frontend/hook
-export interface CreateSekatPayload {
+export interface SekatPayload {
   kodeSekat: string;
   keteranganSekat: "INDIVIDU" | "KOLONI";
   kandangId: string;
+}
+
+export interface EditKandangModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onSave: (namaBaru: string) => Promise<{ success: boolean }>;
+  currentName: string;
+  isSubmitting: boolean;
+}
+
+export interface EditSekatModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onSave: (payload: {
+    kodeSekat: string;
+    keteranganSekat: "INDIVIDU" | "KOLONI";
+    kandangId: string;
+  }) => Promise<boolean | void>;
+  isSubmitting: boolean;
+  dataKandang: Array<{ id: string; nama: string }>;
+  initialData: {
+    kodeSekat: string;
+    keteranganSekat: "INDIVIDU" | "KOLONI";
+    kandangId: string;
+  } | null;
 }
