@@ -1,14 +1,16 @@
 import { SekatWithKandang } from "@/src/interface/kandang-sekat";
-import { Layers, Trash } from "lucide-react";
+import { Edit, Layers, Trash } from "lucide-react";
 
 export function SekatTable({
   data = [],
   isLoading,
+  onEditClick,
   onDeleteClick,
   emptyMessage,
 }: {
   data: SekatWithKandang[];
   isLoading: boolean;
+  onEditClick: (sekat: SekatWithKandang) => void;
   onDeleteClick: (id: string, name: string) => void;
   emptyMessage?: string;
 }) {
@@ -64,6 +66,13 @@ export function SekatTable({
               </td>
 
               <td className="p-4 text-center">
+                <button
+                  onClick={() => onEditClick(sekat)}
+                  className="p-2 text-blue-400  hover:bg-red-50 dark:hover:bg-red-950/30 rounded-xl transition-colors cursor-pointer"
+                  title="Edit sekat"
+                >
+                  <Edit size={16} />
+                </button>
                 <button
                   onClick={() => onDeleteClick(sekat.id, sekat.kodeSekat)}
                   className="p-2 text-red-600  hover:bg-red-50 dark:hover:bg-red-950/30 rounded-xl transition-colors cursor-pointer"

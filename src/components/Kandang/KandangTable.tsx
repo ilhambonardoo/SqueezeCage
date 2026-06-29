@@ -1,14 +1,16 @@
 import { KandangWithSekat } from "@/src/interface/kandang-sekat";
-import { Home, Layers, Trash } from "lucide-react";
+import { Edit, Home, Layers, Trash } from "lucide-react";
 
 export function KandangTable({
   data = [],
   isLoading,
+  onEditClick,
   onDeleteClick,
   emptyMessage = "Belum ada bangunan kandang.",
 }: {
   data: KandangWithSekat[];
   isLoading: boolean;
+  onEditClick: (id: string, name: string) => void;
   onDeleteClick: (id: string, name: string) => void;
   emptyMessage?: string;
 }) {
@@ -54,6 +56,13 @@ export function KandangTable({
                 </span>
               </td>
               <td className="p-4 text-center">
+                <button
+                  onClick={() => onEditClick(kandang.id, kandang.nama)}
+                  className="p-2 text-blue-400 hover:bg-red-50 dark:hover:bg-red-950/30 rounded-xl transition-colors cursor-pointer"
+                  title="Edit Kandang"
+                >
+                  <Edit size={16} />
+                </button>
                 <button
                   onClick={() => onDeleteClick(kandang.id, kandang.nama)}
                   className="p-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30 rounded-xl transition-colors cursor-pointer"
