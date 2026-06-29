@@ -1,9 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
-import {
-  CreateSekatPayload,
-  SekatWithKandang,
-} from "../interface/kandang-sekat";
+import { SekatPayload, SekatWithKandang } from "../interface/kandang-sekat";
 
 export function useSekat() {
   const [dataSekat, setDataSekat] = useState<SekatWithKandang[]>([]);
@@ -39,7 +36,7 @@ export function useSekat() {
     getDataSekat();
   }, [getDataSekat]);
 
-  const createDataSekatNew = async (payload: CreateSekatPayload) => {
+  const createDataSekatNew = async (payload: SekatPayload) => {
     try {
       setIsSubmitting(true);
       const res = await fetch("/api/kandang/sekat", {
@@ -53,14 +50,42 @@ export function useSekat() {
       if (!res.ok) {
         toast.error(data.message || "Gagal membuat sekat!");
         return { success: false };
+      } else {
+        toast.success("Sekat berhasil dibuat!");
       }
-
-      toast.success("Sekat berhasil dibuat!");
 
       await getDataSekat();
       return { success: true };
     } catch {
       setErrors("Terjadi kesalahan pada jaringan");
+      return { success: false };
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const updateSekat = async (id: string, payload: SekatPayload) => {
+    try {
+      setIsSubmitting(true);
+      const res = await fetch(`/api/kandang/sekat/${id}`, {
+        method: "PATCH",
+        headers: { "Content-type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        toast.error(data.message || " Gagal merubah data kandang!");
+        return { success: false };
+      } else {
+        toast.success("Sekat berhasil diubah!");
+      }
+
+      await getDataSekat();
+      return { success: true };
+    } catch {
+      toast.error("Terjadi kesalahan jaringan saat menghapus data");
       return { success: false };
     } finally {
       setIsSubmitting(false);
@@ -99,6 +124,7 @@ export function useSekat() {
     errors,
     getDataSekat,
     createDataSekatNew,
+    updateSekat,
     deleteDataSekat,
   };
 }

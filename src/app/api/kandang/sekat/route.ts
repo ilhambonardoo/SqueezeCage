@@ -20,7 +20,7 @@ export async function GET() {
 
     return NextResponse.json(res.data, { status: 200 });
   } catch (error) {
-    serverError(error);
+    return serverError(error);
   }
 }
 
@@ -38,6 +38,6 @@ export async function POST(request: Request) {
 
     return NextResponse.json(res.data, { status: 201 });
   } catch (error) {
-    serverError(error);
+    return serverError(error);
   }
 }

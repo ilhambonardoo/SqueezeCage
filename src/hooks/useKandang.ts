@@ -49,14 +49,41 @@ export function useKandang() {
       if (!res.ok) {
         toast.error(data.message || "Gagal membuat kandang!");
         return { success: false };
+      } else {
+        toast.success("Kandang berhasil dibuat!");
       }
-
-      toast.success("Kandang berhasil dibuat!");
-      await getDataKandang(); // Memanggil data kandang agar sinkron pada sat diupdate
-
+      await getDataKandang();
       return { success: true };
     } catch {
       setErrors("Terjadi kesalahan pada jaringan");
+    } finally {
+      setIsSubmmiting(false);
+    }
+  };
+
+  const updateKandang = async (id: string, nama: string) => {
+    try {
+      setIsSubmmiting(true);
+      const res = await fetch(`/api/kandang/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ nama }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        toast.error(data.message || "Gagal merubah data kandang!");
+        return { success: false };
+      } else {
+        toast.success("Berhasil merubah data kandang!");
+      }
+
+      await getDataKandang();
+      return { success: true };
+    } catch {
+      toast.error("Terjadi kesalahan jaringan saat menghapus data");
+      return { success: false };
     } finally {
       setIsSubmmiting(false);
     }
@@ -95,6 +122,7 @@ export function useKandang() {
     errors,
     getDataKandang,
     createDataKandangNew,
+    updateKandang,
     deleteDataKandang,
   };
 }

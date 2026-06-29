@@ -12,6 +12,8 @@ import { useSearchPagination } from "@/src/hooks/useSearchPagination";
 import SearchInput from "../utils/SearchInput";
 import Pagination from "../utils/Pagination";
 import ConfirmDeleteDialog from "../utils/ConfirmDeleteDialog";
+import { EditKandangModal } from "./EditKandangModal";
+import { EditSekatModal } from "./EditSekatModal";
 
 const KandangForm = () => {
   const mounted = useMounted();
@@ -22,6 +24,7 @@ const KandangForm = () => {
     isLoading: loadKandang,
     isSubmitting: subKandang,
     createDataKandangNew,
+    updateKandang,
     deleteDataKandang,
   } = useKandang();
   const {
@@ -29,6 +32,7 @@ const KandangForm = () => {
     isLoading: loadSekat,
     isSubmitting: subSekat,
     createDataSekatNew,
+    updateSekat,
     deleteDataSekat,
   } = useSekat();
 
@@ -65,6 +69,13 @@ const KandangForm = () => {
     "INDIVIDU",
   );
   const [kandangId, setKandangId] = useState("");
+  const [selectedKandang, setSelectedKandang] = useState<{
+    id: string;
+    nama: string;
+  } | null>(null);
+  const [selectedSekat, setSelectedSekat] = useState<SekatWithKandang | null>(
+    null,
+  );
   const [deleteModal, setDeleteModal] = useState<{
     open: boolean;
     id: string;
@@ -85,6 +96,14 @@ const KandangForm = () => {
 
     const success = await createDataKandangNew(namaKandang);
     if (success) setNamaKandang("");
+  };
+
+  const handleEditKandangClick = (id: string, namaBaru: string) => {
+    setSelectedKandang({ id, nama: namaBaru });
+  };
+
+  const handleEditSekatClick = (sekat: SekatWithKandang) => {
+    setSelectedSekat(sekat);
   };
 
   const handleSekatSubmit = async (e: React.FormEvent) => {
@@ -283,6 +302,7 @@ const KandangForm = () => {
                   ? "Tidak ada kandang yang cocok dengan pencarian Anda."
                   : "Belum ada bangunan kandang."
               }
+              onEditClick={(id, name) => handleEditKandangClick(id, name)}
               onDeleteClick={(id, name) =>
                 setDeleteModal({
                   open: true,
@@ -322,6 +342,7 @@ const KandangForm = () => {
             <SekatTable
               data={currentSekatItems}
               isLoading={loadSekat}
+              onEditClick={(sekat) => handleEditSekatClick(sekat)}
               onDeleteClick={(id, name) =>
                 setDeleteModal({
                   open: true,
@@ -365,6 +386,50 @@ const KandangForm = () => {
         loading={subKandang} // Mengikuti state loading submit/proses hapus dari hook
         onClose={() => setDeleteModal((prev) => ({ ...prev, open: false }))}
         onConfirm={handleConfirmDelete}
+      />
+
+      <EditKandangModal
+        isOpen={!!selectedKandang}
+        currentName={selectedKandang?.nama || ""}
+        isSubmitting={subKandang}
+        onClose={() => setSelectedKandang(null)}
+        onSave={async (namaBaru) => {
+          if (!namaBaru.trim()) {
+            toast.error("Nama tidak boleh kosong");
+            return { success: false };
+          }
+
+          const res = await updateKandang(selectedKandang!.id, namaBaru);
+          if (res.success) {
+            setSelectedKandang(null);
+            return { success: true };
+          }
+
+          return { success: false };
+        }}
+      />
+
+      <EditSekatModal
+        key={selectedSekat?.id ?? "closed"}
+        isOpen={!!selectedSekat}
+        isSubmitting={subSekat}
+        dataKandang={dataKandang}
+        initialData={selectedSekat}
+        onClose={() => setSelectedSekat(null)}
+        onSave={async (payload) => {
+          if (!payload.kodeSekat.trim()) {
+            toast.error("Kode sekat wajib diisi");
+            return false;
+          }
+
+          const res = await updateSekat(selectedSekat!.id, payload);
+          if (res.success) {
+            setSelectedSekat(null);
+            return true;
+          }
+
+          return false;
+        }}
       />
     </div>
   );

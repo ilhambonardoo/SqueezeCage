@@ -63,6 +63,39 @@ export async function createKandang(input: CreateKandangInput) {
   return { data, message: "Kandang berhasil dibuat", status: 201 };
 }
 
+export async function updateKandang(id: string, input: CreateKandangInput) {
+  const session = await getServerSession(authOptions);
+  if (!session) {
+    return { status: 401, message: "Unauthorized" };
+  }
+
+  const validation = KandangSekatValidation.KandangSchema.safeParse(input);
+
+  if (!validation.success) {
+    return { status: 400, message: validation.error.issues[0].message };
+  }
+
+  const exists = await prisma.kandang.findUnique({
+    where: { nama: validation.data.nama },
+  });
+  if (exists) return { status: 409, message: "Nama kandang sudah digunakan!" };
+
+  const data = await prisma.kandang.update({
+    where: { id },
+    data: {
+      ...input,
+    },
+  });
+
+  revalidatePath("/kandang-sekat");
+
+  return {
+    data,
+    message: "Data berhasil diubah",
+    status: 200,
+  };
+}
+
 export async function deleteKandang(id: string) {
   const session = await getServerSession(authOptions);
 
