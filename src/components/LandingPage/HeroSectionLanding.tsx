@@ -1,13 +1,9 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-
-import { ArrowRight } from "lucide-react";
 import { useMounted } from "@/src/hooks/useMounted";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { signIn } from "next-auth/react";
-import { motion } from "framer-motion";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -52,7 +48,7 @@ const HeroSectionLanding = () => {
                 .map((letter, index) => {
                   const threshold = index / finalTitle.length;
                   if (letter === " ") return " ";
-                  if (progress > threshold + 0.01) {
+                  if (progress < threshold + 0.02) {
                     return finalTitle[index];
                   }
                   return chars[Math.floor(Math.random() * chars.length)];
@@ -67,7 +63,7 @@ const HeroSectionLanding = () => {
       tl.to(
         imageWrapperRef.current,
         {
-          scale: 1.09,
+          scale: 1.23,
           width: "100%",
           borderRadius: "0px",
           ease: "none",
@@ -104,19 +100,6 @@ const HeroSectionLanding = () => {
         >
           <div className="absolute inset-0 bg-linear-to-t from-black/40 via-transparent to-transparent z-10"></div>
 
-          <div className="absolute bottom-8 lg:bottom-30 lg:right-40 left-1/2 -translate-x-1/2 md:left-auto md:right-12 md:bottom-12 md:translate-x-0 flex items-center justify-center z-20 w-[calc(100%-2rem)] md:w-auto">
-            <motion.button
-              initial={{ opacity: 0 }}
-              whileHover={{ scale: 0.9, opacity: 0.6 }}
-              whileInView={{ opacity: 1 }}
-              transition={{ duration: 1, ease: "easeInOut" }}
-              onClick={() => signIn()}
-              className="w-full md:w-auto bg-amber-600 cursor-pointer inline-flex items-center justify-center px-6 md:px-8 py-3 md:py-4 hover:bg-amber-700 text-white font-semibold rounded-xl md:rounded-2xl transition-all shadow-lg group whitespace-nowrap"
-            >
-              Masuk
-              <ArrowRight className="ml-2 w-4 h-4 md:w-5 md:h-5 transition-transform" />
-            </motion.button>
-          </div>
           <video
             className="w-full h-133 md:h-auto lg:h-screen object-cover aspect-video md:aspect-21/9"
             autoPlay
