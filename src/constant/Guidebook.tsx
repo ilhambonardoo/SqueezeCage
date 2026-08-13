@@ -604,7 +604,7 @@ export const tabs: Tab[] = [
     content: (
       <>
         <div className="w-full overflow-x-auto border border-slate-200 rounded-xl">
-          <table className="w-full text-sm text-left text-slate-600 min-w-[600px]">
+          <table className="w-full text-sm text-left text-slate-600 min-w-150">
             <thead className="text-xs uppercase bg-slate-100 text-slate-700 border-b border-slate-200">
               <tr>
                 <th className="px-4 py-3 font-bold w-1/4">Gejala / Masalah</th>
