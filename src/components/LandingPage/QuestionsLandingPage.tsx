@@ -49,9 +49,7 @@ export default function QuestionsLandingPage() {
                   <div className="flex gap-3">
                     <div
                       className={`p-2 rounded-lg mt-0.5 shrink-0 ${
-                        isOpen
-                          ? "bg-amber-100 text-amber-700"
-                          : "bg-slate-100 text-slate-500"
+                        isOpen ? "text-amber-700" : "text-slate-500"
                       }`}
                     >
                       <CategoryIcon size={18} />
