@@ -24,7 +24,7 @@ export default function AboutLandingPage() {
           </p>
         </section>
 
-        <section className="bg-white rounded-2xl h-[70vh] border-slate-200 shadow-sm overflow-hidden">
+        <section className="bg-white rounded-2xl lg:h-[70vh] h-90vh border-slate-200 shadow-sm overflow-hidden">
           <div className="p-6 border-b border-slate-100 flex items-center gap-2">
             <Box className="text-amber-600" size={22} />
             <h2 className="text-xl font-bold text-slate-900">
