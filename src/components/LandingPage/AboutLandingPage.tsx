@@ -1,6 +1,6 @@
 "use client";
 
-import { Cpu, Layers, Box } from "lucide-react";
+import { Cpu, Layers, Box, Download, FileText } from "lucide-react";
 import Model3DSection from "./Model3DSection";
 import { useMounted } from "@/src/hooks/useMounted";
 import Image from "next/image";
@@ -25,11 +25,32 @@ export default function AboutLandingPage() {
         </section>
 
         <section className="bg-white rounded-2xl h-auto border-slate-200 shadow-sm overflow-hidden">
-          <div className="p-6 border-b border-slate-100 flex items-center gap-2">
-            <Box className="text-amber-600" size={22} />
-            <h2 className="text-xl font-bold text-slate-900">
-              Visualisasi 3D Kandang
-            </h2>
+          <div className="flex w-full flex-col gap-4 border-b border-slate-50 p-4 sm:flex-row sm:items-center sm:justify-between sm:p-6">
+            <div className="flex justify-center items-center gap-4">
+              <Box className="text-amber-600" size={22} />
+              <h2 className="text-xl font-bold text-slate-900">
+                Visualisasi 3D Kandang
+              </h2>
+            </div>
+            <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:items-center sm:gap-4">
+              <a
+                href="/gamtek/gamtek.pdf"
+                download="Dokumentasi-SmartSqueeze-Cage.pdf"
+                className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-amber-600 px-4 py-3 text-sm font-semibold text-white transition hover:bg-amber-700 sm:w-auto"
+              >
+                <Download size={18} />
+                Download Gambaran Teknik
+              </a>
+              <a
+                href="/gamtek/gamtek.pdf"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex w-full items-center justify-center gap-2 rounded-lg border border-amber-600 px-4 py-3 text-sm font-semibold text-amber-700 transition hover:bg-amber-50 sm:w-auto"
+              >
+                <FileText size={18} />
+                Lihat Gambaran Teknik
+              </a>
+            </div>
           </div>
 
           <div className="bg-slate-900 h-auto w-full flex flex-col items-center justify-center text-slate-400">
